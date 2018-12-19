@@ -41,8 +41,8 @@ from repos import PowerupRepo, PowerupRepoFromDir, PowerupYumRepoFromRepo, \
 from software_hosts import get_ansible_inventory, validate_software_inventory
 from lib.utilities import sub_proc_display, sub_proc_exec, heading1, Color, \
     get_selection, get_yesno, rlinput, bold, ansible_pprint, replace_regex
-from lib.genesis import GEN_SOFTWARE_PATH, get_ansible_playbook_path
-
+from lib.genesis import GEN_SOFTWARE_PATH, get_ansible_playbook_path, get_playbooks_path
+from travis import travis
 
 class software(object):
     """ Software installation class. The prep method is used to setup
@@ -1476,6 +1476,12 @@ class software(object):
             if 'hosts' in task:
                 extra_args = f"--limit \'{task['hosts']},localhost\'"
             self._run_ansible_tasks(task['tasks'], extra_args)
+            host_path = get_playbooks_path() +'/software_hosts'
+ #           sub_proc_display(f"ansible all -i {host_path} "
+ #                            "-m shell -a 'yum list installed > pre_list.txt'", 
+ #                            shell=True)
+            travis()
+
         print('Done')
 
     def _run_ansible_tasks(self, tasks_path, extra_args=''):
