@@ -27,6 +27,7 @@ def pre_package_lister():
     for line_a in pre_dbfile.readlines():
         value_a = line_a.split()
         pre_pkg_list.append(value_a[0])
+        
 
 def post_package_lister():
     for line_a in post_dbfile.readlines():
@@ -70,7 +71,10 @@ while format_menu == True:
                   .format(final_file,final_file))
          yum_dbfile = open('yml_formatted_{}'.format(final_file),'w')
          for j in final_pkg_list:
-            pkg_strip = j.split('.',1)[0]
+            prefix_pkg_strip = j.split('.',1)[0] #splitting delta at '.' gather before
+            suffix_pkg_strip = j.split('.',1)[1] #splitting delta at '.' gather after 
+            print prefix_pkg_strip
+            print suffix_pkg_strip
             new_value = os.popen("cat {} rpm_post_list.txt | grep {} "
                                 .format(post_file,pkg_strip)).read()
             yum_dbfile.write('{}\n'.format(new_value))
@@ -78,7 +82,7 @@ while format_menu == True:
          format_menu = False
 
       elif pkg_type_select == '4':
-         pip_dbfile = open('{}'.format(final_file),'wt+')
+         pip_dbfile = open('{}'.format(final_file),'rb+')
          for line_c in pip_dbfile.readlines():
             value_c = line_c.split()
             new_value = "{}=={}".format(value_c[0],value_c[1])
@@ -88,7 +92,7 @@ while format_menu == True:
          print ("Done.")
 
       elif pkg_type_select == '5':
-         conda_dbfile = open('{}'.format(final_file),'wt+')
+         conda_dbfile = open('{}'.format(final_file),'rb+')
          for line_d in conda_dbfile.readlines():
             value_d = line_d.split()
             new_value = ("{}-{}-{}.tar.bz2"
