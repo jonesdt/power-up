@@ -10,6 +10,9 @@ cwd = os.getcwd()
 print("Current working directory is:", cwd) 
 os.system("ls -l /home/jonest/power-up/logs/dependencies")
 
+#pre_file = 'yum_pre_list.txt'
+#post_file = 'yum_post_list.txt'
+
 pre_file  = str(raw_input('Enter pre_install.txt File: '))
 post_file = str(raw_input('Enter post_install.txt File: '))
 
@@ -64,24 +67,32 @@ while format_menu == True:
                                      "\n(3)Yum \n(4)PIP \n(5)Conda \n"))
       if pkg_type_select == '3':
 
-         dep_search = ['anaconda',
+         dep_search = [
+                       'anaconda',
                        'cuda-powerup',
                        'powerai-powerup',
                        'dependencies-powerup',
-                       'installed']
+                       'epel-ppc64le-powerup',
+#                       'installed'
+                      ]
 
-         dep_files = ['anaconda_{}'.format(final_file),
+         dep_files = [
+                      'anaconda_{}'.format(final_file),
                       'cuda-powerup_{}'.format(final_file),
                       'powerai-powerup_{}'.format(final_file),
                       'dependencies-powerup_{}'.format(final_file),
-                      'installed_{}'.format(final_file)]
+                      'epel-ppc64le-powerup_{}'.format(final_file),
+ #                     'installed_{}'.format(final_file)
+                     ]
 
-         tmp_dep_files = ['tmp_anaconda_{}'.format(final_file),
+         tmp_dep_files = [
+                          'tmp_anaconda_{}'.format(final_file),
                           'tmp_cuda-powerup_{}'.format(final_file),
                           'tmp_powerai-powerup_{}'.format(final_file),
                           'tmp_dependencies-powerup_{}'.format(final_file),
-                          'tmp_installed_{}'.format(final_file)]
-
+                          'tmp_epel-ppc64le-powerup_{}'.format(final_file),
+#                          'tmp_installed_{}'.format(final_file)
+                         ]
 
          yum_conda_dbfile = open('anaconda_{}'
                                 .format(final_file),'w+')
@@ -91,6 +102,8 @@ while format_menu == True:
                                   .format(final_file),'w+')
          yum_dependencies_dbfile = open('dependencies-powerup_{}'
                                        .format(final_file),'w+')
+         yum_epel_dbfile = open('epel-ppc64le-powerup_{}'
+                               .format(final_file),'w+')
          yum_installed_dbfile = open('installed_{}'
                                     .format(final_file),'w+')
 
@@ -98,8 +111,11 @@ while format_menu == True:
          cuda_powerup_list = []
          powerai_powerup_list = []
          dependencies_powerup_list = []
+         epel_ppc64le_powerup_list = []
          installed_list = []
          
+         for dep in dep_files: 
+            os.system("touch {}; chmod 777 {}".format(dep,dep))
 
          for search in dep_search:
             dep_grep = os.popen("cat {} | grep {} > tmp_{}_{}"
@@ -135,10 +151,18 @@ while format_menu == True:
 
          for line_a in open("{}".format(tmp_dep_files[4]),'r').readlines():
             value_a = line_a.split('.',1)
-            installed_list.append(value_a[0])
-         for l in installed_list:
+            dependencies_powerup_list.append(value_a[0])
+         for l in epel_ppc64le_powerup_list:
             new_value = os.popen("cat rpm_post_list.txt | grep {}".format(l)).read()
-            yum_installed_dbfile.write('{}\n'.format(new_value))
+            yum_epel_dbfile.write('{}\n'.format(new_value))
+
+#         for line_b in open("{}".format(tmp_dep_files[5]),'r').readlines():
+#            value_b = line_b.split('.',1)
+#            installed_list.append(value_b[0])
+#         for l in installed_list:
+#            new_value = os.popen("cat rpm_post_list.txt | grep {}".format(l)).read()
+#            yum_installed_dbfile.write('{}\n'.format(new_value))
+
          format_menu = False
 
       elif pkg_type_select == '4':
@@ -164,7 +188,7 @@ while format_menu == True:
       print ("Please select valid option")
 
 print ('Cleaning up Files...')
-os.system("sudo rm -rf tmp* {}".format(final_file))
+os.system("sudo rm -rf tmp* {} ".format(final_file))
 
 print ("Process Completed.")
 
