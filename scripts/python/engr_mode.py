@@ -171,6 +171,9 @@ def pre_post_file_collect(task):
                        "'yum list installed > yum_post_list.txt'",
                        shell=True)      
 
+      sub_proc_display(f"ansible all -i {host_path} -m shell -a "
+                       "'rpm -qa > rpm_post_list.txt'",
+                       shell=True)
 
 def ENGR_MODE(task):
    ENGR_MODE_STATUS = True  
