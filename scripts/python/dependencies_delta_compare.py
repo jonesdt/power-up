@@ -10,11 +10,11 @@ cwd = os.getcwd()
 print("Current working directory is:", cwd) 
 os.system("ls -l /home/jonest/power-up/logs/dependencies")
 
-#pre_file = 'yum_pre_list.txt'
-#post_file = 'yum_post_list.txt'
+pre_file = 'yum_pre_list.txt'
+post_file = 'yum_post_list.txt'
 
-pre_file  = str(raw_input('Enter pre_install.txt File: '))
-post_file = str(raw_input('Enter post_install.txt File: '))
+#pre_file  = str(raw_input('Enter pre_install.txt File: '))
+#post_file = str(raw_input('Enter post_install.txt File: '))
 
 pre_dbfile  = open("{}".format(pre_file),'r')
 post_dbfile = open("{}".format(post_file),'r')
@@ -73,7 +73,7 @@ while format_menu == True:
                        'powerai-powerup',
                        'dependencies-powerup',
                        'epel-ppc64le-powerup',
-#                       'installed'
+                       'installed',
                       ]
 
          dep_files = [
@@ -82,7 +82,7 @@ while format_menu == True:
                       'powerai-powerup_{}'.format(final_file),
                       'dependencies-powerup_{}'.format(final_file),
                       'epel-ppc64le-powerup_{}'.format(final_file),
- #                     'installed_{}'.format(final_file)
+                      'installed_{}'.format(final_file),
                      ]
 
          tmp_dep_files = [
@@ -91,7 +91,7 @@ while format_menu == True:
                           'tmp_powerai-powerup_{}'.format(final_file),
                           'tmp_dependencies-powerup_{}'.format(final_file),
                           'tmp_epel-ppc64le-powerup_{}'.format(final_file),
-#                          'tmp_installed_{}'.format(final_file)
+                          'tmp_installed_{}'.format(final_file),
                          ]
 
          yum_conda_dbfile = open('anaconda_{}'
@@ -153,15 +153,19 @@ while format_menu == True:
             value_a = line_a.split('.',1)
             dependencies_powerup_list.append(value_a[0])
          for l in epel_ppc64le_powerup_list:
-            new_value = os.popen("cat rpm_post_list.txt | grep {}".format(l)).read()
-            yum_epel_dbfile.write('{}\n'.format(new_value))
-
-#         for line_b in open("{}".format(tmp_dep_files[5]),'r').readlines():
-#            value_b = line_b.split('.',1)
-#            installed_list.append(value_b[0])
-#         for l in installed_list:
 #            new_value = os.popen("cat rpm_post_list.txt | grep {}".format(l)).read()
-#            yum_installed_dbfile.write('{}\n'.format(new_value))
+            yum_epel_dbfile.write('{}\n'.format(new_value))
+         os.system("cat {} | grep epel-ppc64le-powerup > {}"
+                  .format(final_file,dep_files[4]))
+#         print("\nEpel PPC64le Dependent Packages:") 
+#         print epel_ppc64le_powerup_list
+         
+         for line_b in open("{}".format(tmp_dep_files[5]),'r').readlines():
+            value_b = line_b.split('.',1)
+            installed_list.append(value_b[0])
+         for l in installed_list:
+            new_value = os.popen("cat rpm_post_list.txt | grep {}".format(l)).read()
+            yum_installed_dbfile.write('{}\n'.format(new_value))
 
          format_menu = False
 
