@@ -10,11 +10,11 @@ cwd = os.getcwd()
 print("Current working directory is:", cwd) 
 os.system("ls -l /home/jonest/power-up/logs/dependencies")
 
-pre_file = 'yum_pre_list.txt'
-post_file = 'yum_post_list.txt'
+#pre_file = 'yum_pre_list.txt'
+#post_file = 'yum_post_list.txt'
 
-#pre_file  = str(raw_input('Enter pre_install.txt File: '))
-#post_file = str(raw_input('Enter post_install.txt File: '))
+pre_file  = str(raw_input('Enter pre_install.txt File: '))
+post_file = str(raw_input('Enter post_install.txt File: '))
 
 pre_dbfile  = open("{}".format(pre_file),'r')
 post_dbfile = open("{}".format(post_file),'r')
