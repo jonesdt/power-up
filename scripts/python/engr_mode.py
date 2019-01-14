@@ -103,9 +103,9 @@ def pre_post_file_collect(task):
                        "conda list > dlipy3_conda_pre_install.txt'",
                        shell=True)
       #Deactivate dlipy3_test env
-      sub_proc_display(f"ansible all -i {host_path} -m shell -a "
-                       "'source /opt/anaconda3/bin/deactivate dlipy3_test ",
-                       shell=True)
+#      sub_proc_display(f"ansible all -i {host_path} -m shell -a "
+#                       "'source /opt/anaconda3/bin/deactivate dlipy3_test ",
+#                       shell=True)
       
 #dlipy2_env
       # Create dlipy2_test environment
@@ -125,9 +125,9 @@ def pre_post_file_collect(task):
                        "conda list > dlipy2_conda_pre_install.txt'",
                        shell=True)
       #Deactivate dlipy2_test env
-      sub_proc_display(f"ansible all -i {host_path} -m shell -a "
-                       "'source /opt/anaconda3/bin/deactivate dlipy2_test ",
-                       shell=True)
+#      sub_proc_display(f"ansible all -i {host_path} -m shell -a "
+#                       "'source /opt/anaconda3/bin/deactivate dlipy2_test ",
+#                       shell=True)
 
    elif (task == 'entitle_spectrum_conductor_dli.yml'):
 
