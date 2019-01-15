@@ -1,0 +1,6 @@
+- hosts: blocks
+  tasks:
+  - name: Ansible copy all pre and post txt files to remote server
+    copy:
+      src: ~/*txt
+      dest: ~/power-up/logs/dependencies 
