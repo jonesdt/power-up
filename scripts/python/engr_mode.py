@@ -66,7 +66,7 @@ def pre_post_file_collect(task):
    if (task in tasks_list):
 
       sub_proc_display(f"ansible all -i {host_path} -m shell -a "
-                       "'yum list installed > yum_pre_list.txt'",
+                       "'yum list installed | sed 1,2d | xargs -n3 | column -t > yum_pre_list.txt'",
                        shell=True)
 
       sub_proc_display(f"ansible all -i {host_path} -m shell -a "
@@ -168,7 +168,7 @@ def pre_post_file_collect(task):
 
    elif (task == 'powerai_tuning.yml'):
       sub_proc_display(f"ansible all -i {host_path} -m shell -a "
-                       "'yum list installed > yum_post_list.txt'",
+                       "'yum list installed | sed 1,2d | xargs -n3 | column -t > yum_post_list.txt'",
                        shell=True)      
 
       sub_proc_display(f"ansible all -i {host_path} -m shell -a "
