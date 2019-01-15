@@ -19,28 +19,52 @@ post_dbfile = open("{}".format(post_file),'r')
 pre_pkg_list    = []
 post_pkg_list = final_pkg_list = []
 
-def pre_package_lister():
-    for line_a in pre_dbfile.readlines():
-        value_a = line_a.split()
-        pre_pkg_list.append(value_a[0])
-        
+cleanup_search = [
+                  '@anaconda/7.5',
+                  '@cuda-powerup',
+                  '@powerai-powerup',
+                  '@dependencies-powerup',
+                  '@epel-ppc64le-powerup',
+                  '@installed',
+                 ]
 
+def pre_package_lister():
+   for line_a in pre_dbfile.readlines():
+      value_a = line_a.split()
+      final_value_a = value_a[0]
+      for j in cleanup_search:
+         if (final_value_a != j):
+            pre_pkg_list.append(final_value_a)
+      print final_value_a  
+ 
 def post_package_lister():
-    for line_a in post_dbfile.readlines():
-        value_a = line_a.split()
-        post_pkg_list.append(value_a[0])
+   for line_b in post_dbfile.readlines():
+      value_b = line_b.split()
+      final_value_b = value_b[0]
+      for j in cleanup_search:
+         if (final_value_b != j):
+            post_pkg_list.append(final_value_b)
+      print final_value_b
 
 pre_package_lister()
 post_package_lister()
 
 delta_pkg_list    = []
 
+#Delta Logic
 for i in pre_pkg_list:
     for x in post_pkg_list:
         if x == i:
            delta_pkg_list.append(x)
            final_pkg_list.remove(x)
 
+#2nd level Cleanup
+for x in post_pkg_list:
+   for j in cleanup_search:
+      if x == j:
+         final_pkg_list.remove(x)
+
+#Delta File Created
 final_file  = str(raw_input('Enter final File name: '))
 os.system('touch {}; chmod 777 {}'.format(final_file, final_file))
 
