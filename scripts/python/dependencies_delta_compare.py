@@ -201,7 +201,9 @@ while format_menu == True:
          pip_dbfile = open('{}'.format(final_file),'rb+')
          for line_c in pip_dbfile.readlines():
             value_c = line_c.split()
-            new_value = "{}=={}".format(value_c[0],value_c[1])
+            prefix = value_c[0]
+            suffix = value_c[1]
+            new_value = "{}=={}".format(prefix,suffix)
             pip_dbfile.write('{}\n'.format(new_value))
 
          format_menu = False
@@ -210,8 +212,11 @@ while format_menu == True:
          conda_dbfile = open('{}'.format(final_file),'rb+')
          for line_d in conda_dbfile.readlines():
             value_d = line_d.split()
+            prefix = value_d[0]
+            suffix = value_d[2]
+            version = value_d[1]
             new_value = ("{}-{}-{}.tar.bz2"
-                        .format(value_d[0],value_d[1],value_d[2]))
+                        .format(prefix,version,suffix))
             conda_dbfile.write('{}\n'.format(new_value))
          
          format_menu = False
