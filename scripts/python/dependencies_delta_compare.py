@@ -3,6 +3,7 @@
 import os
 import sys
 import fileinput
+import re
 
 print '\n'
 os.chdir("/home/jonest/power-up/logs/dependencies/")
@@ -10,8 +11,11 @@ cwd = os.getcwd()
 print("Current working directory is:", cwd) 
 os.system("ls -l /home/jonest/power-up/logs/dependencies")
 
-pre_file  = str(raw_input('Enter pre_install.txt File: '))
-post_file = str(raw_input('Enter post_install.txt File: '))
+pre_file  = 'yum_pre_list.txt'
+post_file = 'yum_post_list.txt'
+
+#pre_file  = str(raw_input('Enter pre_install.txt File: '))
+#post_file = str(raw_input('Enter post_install.txt File: '))
 
 pre_dbfile  = open("{}".format(pre_file),'r')
 post_dbfile = open("{}".format(post_file),'r')
@@ -19,31 +23,18 @@ post_dbfile = open("{}".format(post_file),'r')
 pre_pkg_list    = []
 post_pkg_list = final_pkg_list = []
 
-cleanup_search = [
-                  '@anaconda/7.5',
-                  '@cuda-powerup',
-                  '@powerai-powerup',
-                  '@dependencies-powerup',
-                  '@epel-ppc64le-powerup',
-                  '@installed',
-                 ]
-
 def pre_package_lister():
    for line_a in pre_dbfile.readlines():
       value_a = line_a.split()
       final_value_a = value_a[0]
-      for j in cleanup_search:
-         if (final_value_a != j):
-            pre_pkg_list.append(final_value_a)
+      pre_pkg_list.append(final_value_a)
       print final_value_a  
  
 def post_package_lister():
    for line_b in post_dbfile.readlines():
       value_b = line_b.split()
       final_value_b = value_b[0]
-      for j in cleanup_search:
-         if (final_value_b != j):
-            post_pkg_list.append(final_value_b)
+      post_pkg_list.append(final_value_b)
       print final_value_b
 
 pre_package_lister()
@@ -53,15 +44,9 @@ delta_pkg_list    = []
 
 #Delta Logic
 for i in pre_pkg_list:
-    for x in post_pkg_list:
-        if x == i:
-           delta_pkg_list.append(x)
-           final_pkg_list.remove(x)
-
-#2nd level Cleanup
-for x in post_pkg_list:
-   for j in cleanup_search:
-      if x == j:
+   for x in post_pkg_list:
+      if x == i:
+         delta_pkg_list.append(x)
          final_pkg_list.remove(x)
 
 #Delta File Created
@@ -73,9 +58,9 @@ with open('{}'.format(post_file)) as oldfile, open('{}'.format(final_file), 'wt+
       if any(pkg in line for pkg in final_pkg_list):
          newfile.write(line)
 
-print "Results:\n"
-print final_pkg_list 
-print '\n'
+#print "Results:\n"
+#print final_pkg_list 
+#print '\n'
 
 format_menu = True
 while format_menu == True: 
@@ -83,6 +68,7 @@ while format_menu == True:
                            "\n(1)Yes \n(2)No \n"))
    if yml_file == '2':
       format_menu = False
+
    elif yml_file == '1':
       pkg_type_select = str(raw_input("Select Format Type: "
                                      "\n(3)Yum \n(4)PIP \n(5)Conda \n"))
@@ -139,53 +125,61 @@ while format_menu == True:
             os.system("touch {}; chmod 777 {}".format(dep,dep))
 
          for search in dep_search:
-            dep_grep = os.popen("cat {} | grep {} > tmp_{}_{}"
-                               .format(final_file,search,search,final_file))
+            dep_grep = os.popen("cat {} | xargs -n3 | column -t > tmp_{}_{}"
+                               .format(final_file,search,final_file))
 
          for line_a in open("{}".format(tmp_dep_files[0]),'r').readlines():
-            value_a = line_a.split('.',1)
-            anaconda_list.append(value_a[0])
-         for l in anaconda_list:    
-            new_value = os.popen("cat rpm_post_list.txt | grep {}".format(l)).read()
+            value_a = line_a.split()
+            value_b = value_a[0] 
+            prefix = value_b.split('.',1)[0]
+            suffix = value_b.split('.',1)[1]
+            version = value_a[1]
+            new_value = "{}-{}-{}".format(prefix,version,suffix)
             yum_conda_dbfile.write('{}\n'.format(new_value))
-               
+   
          for line_a in open("{}".format(tmp_dep_files[1]),'r').readlines():
-            value_a = line_a.split('.',1)
-            cuda_powerup_list.append(value_a[0])
-         for l in cuda_powerup_list:
-            new_value = os.popen("cat rpm_post_list.txt | grep {}".format(l)).read()
-            yum_cuda_dbfile.write('{}\n'.format(new_value))
+            value_a = line_a.split()
+            value_b = value_a[0]
+            prefix = value_b.split('.',1)[0]
+            suffix = value_b.split('.',1)[1]
+            version = value_a[1]
+            new_value = "{}-{}-{}".format(prefix,version,suffix)            
+            yum_cuda_dbfile.write('{}\n'.format(value_a[0]))
 
          for line_a in open("{}".format(tmp_dep_files[2]),'r').readlines():
-            value_a = line_a.split('.',1)
-            powerai_powerup_list.append(value_a[0])
-         for l in powerai_powerup_list:
-            new_value = os.popen("cat rpm_post_list.txt | grep {}".format(l)).read()
+            value_a = line_a.split()
+            value_b = value_a[0]
+            prefix = value_b.split('.',1)[0]
+            suffix = value_b.split('.',1)[1]
+            version = value_a[1]
+            new_value = "{}-{}-{}".format(prefix,version,suffix)
             yum_powerai_dbfile.write('{}\n'.format(new_value))
 
          for line_a in open("{}".format(tmp_dep_files[3]),'r').readlines():
-            value_a = line_a.split('.',1)
-            dependencies_powerup_list.append(value_a[0])
-         for l in dependencies_powerup_list:
-            new_value = os.popen("cat rpm_post_list.txt | grep {}".format(l)).read()
+            value_a = line_a.split()
+            value_b = value_a[0]
+            prefix = value_b.split('.',1)[0]
+            suffix = value_b.split('.',1)[1]
+            version = value_a[1]
+            new_value = "{}-{}-{}".format(prefix,version,suffix)
             yum_dependencies_dbfile.write('{}\n'.format(new_value))
 
          for line_a in open("{}".format(tmp_dep_files[4]),'r').readlines():
-            value_a = line_a.split('.',1)
-            dependencies_powerup_list.append(value_a[0])
-         for l in epel_ppc64le_powerup_list:
-#            new_value = os.popen("cat rpm_post_list.txt | grep {}".format(l)).read()
+            value_a = line_a.split()
+            value_b = value_a[0]
+            prefix = value_b.split('.',1)[0]
+            suffix = value_b.split('.',1)[1]
+            version = value_a[1]
+            new_value = "{}-{}-{}".format(prefix,version,suffix)
             yum_epel_dbfile.write('{}\n'.format(new_value))
-         os.system("cat {} | grep epel-ppc64le-powerup > {}"
-                  .format(final_file,dep_files[4]))
-#         print("\nEpel PPC64le Dependent Packages:") 
-#         print epel_ppc64le_powerup_list
          
          for line_b in open("{}".format(tmp_dep_files[5]),'r').readlines():
-            value_b = line_b.split('.',1)
-            installed_list.append(value_b[0])
-         for l in installed_list:
-            new_value = os.popen("cat rpm_post_list.txt | grep {}".format(l)).read()
+            value_a = line_a.split()
+            value_b = value_a[0]
+            prefix = value_b.split('.',1)[0]
+            suffix = value_b.split('.',1)[1]
+            version = value_a[1]
+            new_value = "{}-{}-{}".format(prefix,version,suffix)
             yum_installed_dbfile.write('{}\n'.format(new_value))
 
          format_menu = False
@@ -196,6 +190,7 @@ while format_menu == True:
             value_c = line_c.split()
             new_value = "{}=={}".format(value_c[0],value_c[1])
             pip_dbfile.write('{}\n'.format(new_value))
+
          format_menu = False
 
       elif pkg_type_select == '5':
@@ -205,6 +200,7 @@ while format_menu == True:
             new_value = ("{}-{}-{}.tar.bz2"
                         .format(value_d[0],value_d[1],value_d[2]))
             conda_dbfile.write('{}\n'.format(new_value))
+         
          format_menu = False
       
       else:
