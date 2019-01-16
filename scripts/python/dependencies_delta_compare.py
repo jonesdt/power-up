@@ -25,14 +25,12 @@ def pre_package_lister():
       value_a = line_a.split()
       final_value_a = value_a[0]
       pre_pkg_list.append(final_value_a)
-      print final_value_a  
  
 def post_package_lister():
    for line_b in post_dbfile.readlines():
       value_b = line_b.split()
       final_value_b = value_b[0]
       post_pkg_list.append(final_value_b)
-      print final_value_b
 
 pre_package_lister()
 post_package_lister()
