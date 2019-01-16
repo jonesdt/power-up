@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Create inventory"""
 
 # Copyright 2018 IBM Corp.
 #
@@ -174,7 +173,7 @@ def ENGR_MODE(task):
    else:
       pre_post_file_collector(task)
 
-#to find Delts, RUN "dependencies_delta_compare.py" located in /power-up/logs/dependencies
+#to find Delts, RUN "dependencies_delta_compare.py" located in /power-up/scripts/python
 
 
        
