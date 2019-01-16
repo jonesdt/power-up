@@ -1,0 +1,269 @@
+---
+# Copyright 2017 IBM Corp.
+#
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+version: v2.0
+
+location:
+    time_zone: UTC
+    data_center: dataeast
+    racks:
+        - label: rack_1
+          room: room33
+          row: row1
+          cell: 42
+
+globals:
+    introspection: False
+    switch_mode_mgmt: active
+    dhcp_lease_time: 10m
+
+deployer:
+    networks:
+        mgmt:
+            - device: enP4p10s0f1
+              interface_ipaddr: 192.168.32.94
+              prefix: 24
+        client:
+            - device: enP4p10s0f1
+              type: pxe
+              container_ipaddr: 192.168.45.2
+              bridge_ipaddr: 192.168.45.3
+              prefix: 24
+              vlan: 41
+            - device: enP4p10s0f1
+              type: ipmi
+              container_ipaddr: 192.168.35.2
+              bridge_ipaddr: 192.168.35.3
+              prefix: 24
+              vlan: 31
+
+switches:
+    mgmt:
+        - label: mgmt_1_1
+          class: lenovo
+          hostname: mymgmt_1_1
+          userid: admin
+          password: admin
+          ssh_key: <path1>
+          rack_id: rack_1
+          rack_eia: 33
+          interfaces:
+              - type: outband
+                ipaddr: 192.168.32.20
+          links:
+              - target: deployer
+                ports: 19
+              - target: data_1_1
+                ports: 45
+              - target: data_1_2
+                ports: 47
+
+    data:
+        - label: data_1_1
+          class: mellanox
+          hostname: mydata_1
+          userid: admin
+          password: admin
+          ssh_key: <path2>
+          rack_id: rack_1
+          rack_eia: 34
+          interfaces:
+              - type: outband
+                ipaddr: 192.168.32.25
+                port: mgmt0
+          links:
+              - target: mgmt_1_1
+                ipaddr: 192.168.5.31
+                ports:
+                    - mgmt0
+              - target: data_1_2
+                ipaddr: 10.0.0.1
+                prefix: 24
+                vlan: 4000
+                vip: 192.168.32.254
+                ports:
+                    - 7
+                    - 8
+        - label: data_1_2
+          class: mellanox
+          hostname: mydata_2
+          userid: admin
+          password: admin
+          ssh_key: <path3>
+          rack_id: rack_1
+          rack_eia: 35
+          interfaces:
+              - type: outband
+                ipaddr: 192.168.32.30
+                port: mgmt0
+          links:
+              - target: mgmt_1_1
+                #ipaddr: 192.168.5.31
+                ports:
+                    - mgmt0
+              - target: data_1_1
+                ipaddr: 10.0.0.2
+                netmask: 255.255.255.0
+                vlan: 4000
+                vip: 192.168.32.254
+                ports:
+                    - 7
+                    - 8
+
+interfaces:
+    - label: pxe_ifc
+      description: pxe interface
+      DEVICE: eth15
+      TYPE: Ethernet
+      BOOTPROTO: dhcp
+      ONBOOT: yes
+      NM_CONTROLLED: no
+
+    - label: static_1
+      description: static interface 1
+      DEVICE: eth6
+      TYPE: Ethernet
+      BOOTPROTO: none
+      ONBOOT: yes
+      IPADDR_list:
+          - 192.168.1.10-192.168.1.12  # address range
+      NETMASK: 255.255.255.0
+      BROADCAST: 192.168.1.255
+      GATEWAY: 192.168.1.1
+      NM_CONTROLLED: no
+
+    - label: static_2
+      description: static interface 2
+      DEVICE: eth7
+      TYPE: Ethernet
+      BOOTPROTO: none
+      ONBOOT: yes
+      IPADDR_list:
+          - 192.168.2.10-192.168.2.12  # address range
+      NETMASK: 255.255.255.0
+      BROADCAST: 192.168.2.255
+      GATEWAY: 192.168.2.1
+      NM_CONTROLLED: no
+
+    - label: static_3
+      description: static interface 3
+      DEVICE: eth8
+      TYPE: Ethernet
+      BOOTPROTO: none
+      ONBOOT: yes
+      IPADDR_list:
+          - 192.168.3.10-192.168.3.12  # address range
+      NETMASK: 255.255.255.0
+      BROADCAST: 192.168.3.255
+      GATEWAY: 192.168.3.1
+      NM_CONTROLLED: no
+
+    - label: static_4
+      description: static interface 4
+      DEVICE: eth9
+      TYPE: Ethernet
+      BOOTPROTO: none
+      ONBOOT: yes
+      IPADDR_list:
+          - 192.168.4.10-192.168.4.12  # address range
+      NETMASK: 255.255.255.0
+      BROADCAST: 192.168.4.255
+      GATEWAY: 192.168.4.1
+      NM_CONTROLLED: no
+#networks:
+#    - label: nets
+#      interfaces:
+
+node_templates:
+    - label: power_servers
+      ipmi:
+          userid: ADMIN
+          password: admin
+      os:
+          hostname_prefix: server
+#          profile: ubuntu-16.04.3-server-ppc64el
+          profile: RHEL-7.5-20180322.0-Server-ppc64le-dvd1
+          install_device: /dev/sda
+#          install_device: /dev/disk/by-path/pci-0000:01:00.0-sas-phy0-lun-0
+          users:
+#              - name: user
+#                password: $6$3MJoTXe8IqUU$UYXNZwZbiqpqMjVbjtapuJYu1ZRTFbG7PkyL1m7R2TdBlNjUDLnD4JMBpneZoaindjN5hDR19YUWM3vvGIEZE0
+              - name: rhel75
+                password: $6$PU.px9msp0y.c$LoMKL6z1es7g/9brPiCKxhwtt8LvPBQ13FjNWzJFdNVdzadgvvgfAqFGE6QzhXOAdyDKo/CAkM1Q1.ot4Np1j/
+                groups: wheel
+#      networks:
+#      interfaces:
+#          - bond1_interface1
+#          - bond1_interface2
+#          - bond1_mstr
+#          - bond1_vlan23
+#
+#          - bond2_interface1
+#          - bond2_interface2
+#          - bond2_mstr
+#          - bond2_vlan33
+
+
+      # Each host has one network interface for each of these ports and
+      # these port numbers represent the switch port number to which the host
+      # interface is physically cabled.
+      # To add or remove hosts for this node_template you add or remove
+      # switch port numbers to these ports.
+      physical_interfaces:
+          ipmi:
+              - switch: mgmt_1_1
+                ports:
+                    - 24
+          pxe:
+              - switch: mgmt_1_1
+                interface: pxe_ifc
+                rename: true
+                ports:
+                    - 23
+          data:
+              - switch: data_1_1
+                interface: static_1
+                rename: true
+                ports:
+                    - 19
+              - switch: data_1_2
+                interface: static_2
+                rename: true
+                ports:
+                    - 19
+              - switch: data_1_1
+                interface: static_3
+                rename: true
+                ports:
+                    - 20
+              - switch: data_1_2
+                interface: static_4
+                rename: true
+                ports:
+                    - 20
+#
+software_bootstrap:
+    - hosts: all
+      command: touch xyz.txt
+    - hosts: power_servers
+      command: |
+        set -e
+        touch abc.txt
+
+# Additional key/value pairs are not processed by Genesis, but are copied into
+# the inventory.yml file and made available to post-Genesis scripts and/or
+# playbooks.
