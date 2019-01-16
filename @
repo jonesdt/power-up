@@ -1,0 +1,46 @@
+#!/usr/bin/python3
+
+import os
+import sys
+
+os.system("ls -l /home/jonest/power-up/dependencies/")
+
+txt_file1 = str(input("pre_install file: "))
+txt_file2 = str(input("post_install file: "))
+
+pre_dbfile  = open('{}'.format(txt_file1,'r')
+post_dbfile = open(f'{txt_file2}','r')
+
+pre_pkg_list    = []
+#pre_pkg_version = []
+
+post_pkg_list = final_pkg_list = []
+#post_pkg_version = final_pkg_version = []
+
+def pre_package_lister():
+    for line_a in pre_dbfile.readlines():
+        value_a = line_a.split()
+        pre_pkg_list.append(value_a[0])
+#       pre_pkg_version.append(value_a[1])
+
+def post_package_lister():
+    for line_a in post_dbfile.readlines():
+        value_a = line_a.split()
+        post_pkg_list.append(value_a[0])
+ #      post_pkg_version.append(value_a[1])
+
+pre_package_lister()
+post_package_lister()
+
+delta_pkg_list    = []
+#delta_pkg_version = []
+
+for i in pre_pkg_list:
+    for x in post_pkg_list:
+        if x == i:
+           delta_pkg_list.append(x)
+           final_pkg_list.remove(x)
+
+print "Results: "
+print final_pkg_list
+ 

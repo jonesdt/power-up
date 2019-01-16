@@ -2,14 +2,15 @@
 - description: Update yum cache
   tasks: yum_update_cache.yml
 
-- description: Install additional software packages
-  tasks: yum_install_additional_software.yml
+#- description: Install additional software packages
+#  tasks: yum_install_additional_software.yml
 #
-#- description: Update kernel  tasks: update_kernel.yml
+#- description: Update kernel  
+#  tasks: update_kernel.yml
 #
 #- description: Disable Memory Auto-Onlining
 #  tasks: disable_udev_mem_auto_onlining.yml
-
+#
 #- description: Install CUDA toolkit
 #  tasks: install_cuda.yml
 #
@@ -61,5 +62,5 @@
 #- description: Add all hosts to cluster
 #  tasks: add_hosts_to_cluster.yml
 #
-#- description: PowerAI tuning recommendations
-#  tasks: powerai_tuning.yml
+- description: PowerAI tuning recommendations
+  tasks: powerai_tuning.yml
