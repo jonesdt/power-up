@@ -192,6 +192,8 @@ while format_menu == True:
             version = value_a[1]
             new_value = "{}-{}.{}".format(prefix,version,suffix)
             yum_installed_dbfile.write('{}\n'.format(new_value))
+ 
+         os.system("sudo rm -rf tmp* {} ".format(final_file))
 
          format_menu = False
 
@@ -218,9 +220,6 @@ while format_menu == True:
          print ("Plese make valid selection")
    else:
       print ("Please select valid option")
-
-print ('Cleaning up Files...')
-os.system("sudo rm -rf tmp* {} ".format(final_file))
 
 print ("Process Completed.")
 
