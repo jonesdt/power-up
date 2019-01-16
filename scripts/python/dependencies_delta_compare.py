@@ -131,7 +131,7 @@ while format_menu == True:
             prefix = value_b.split('.',1)[0]
             suffix = value_b.split('.',1)[1]
             version = value_a[1]
-            new_value = "{}-{}-{}".format(prefix,version,suffix)
+            new_value = "{}-{}.{}".format(prefix,version,suffix)
             yum_conda_dbfile.write('{}\n'.format(new_value))
    
          for line_a in open("{}".format(tmp_dep_files[1]),'r').readlines():
@@ -140,7 +140,7 @@ while format_menu == True:
             prefix = value_b.split('.',1)[0]
             suffix = value_b.split('.',1)[1]
             version = value_a[1]
-            new_value = "{}-{}-{}".format(prefix,version,suffix)            
+            new_value = "{}-{}.{}".format(prefix,version,suffix)            
             yum_cuda_dbfile.write('{}\n'.format(value_a[0]))
 
          for line_a in open("{}".format(tmp_dep_files[2]),'r').readlines():
@@ -149,7 +149,7 @@ while format_menu == True:
             prefix = value_b.split('.',1)[0]
             suffix = value_b.split('.',1)[1]
             version = value_a[1]
-            new_value = "{}-{}-{}".format(prefix,version,suffix)
+            new_value = "{}-{}.{}".format(prefix,version,suffix)
             yum_powerai_dbfile.write('{}\n'.format(new_value))
 
          for line_a in open("{}".format(tmp_dep_files[3]),'r').readlines():
@@ -158,7 +158,7 @@ while format_menu == True:
             prefix = value_b.split('.',1)[0]
             suffix = value_b.split('.',1)[1]
             version = value_a[1]
-            new_value = "{}-{}-{}".format(prefix,version,suffix)
+            new_value = "{}-{}.{}".format(prefix,version,suffix)
             yum_dependencies_dbfile.write('{}\n'.format(new_value))
 
          for line_a in open("{}".format(tmp_dep_files[4]),'r').readlines():
@@ -167,7 +167,7 @@ while format_menu == True:
             prefix = value_b.split('.',1)[0]
             suffix = value_b.split('.',1)[1]
             version = value_a[1]
-            new_value = "{}-{}-{}".format(prefix,version,suffix)
+            new_value = "{}-{}.{}".format(prefix,version,suffix)
             yum_epel_dbfile.write('{}\n'.format(new_value))
          
          for line_b in open("{}".format(tmp_dep_files[5]),'r').readlines():
@@ -176,7 +176,7 @@ while format_menu == True:
             prefix = value_b.split('.',1)[0]
             suffix = value_b.split('.',1)[1]
             version = value_a[1]
-            new_value = "{}-{}-{}".format(prefix,version,suffix)
+            new_value = "{}-{}.{}".format(prefix,version,suffix)
             yum_installed_dbfile.write('{}\n'.format(new_value))
 
          format_menu = False
