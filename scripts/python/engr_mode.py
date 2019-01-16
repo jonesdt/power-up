@@ -69,10 +69,6 @@ def pre_post_file_collect(task):
                        "'yum list installed | sed 1,2d | xargs -n3 | column -t > yum_pre_list.txt'",
                        shell=True)
 
-      sub_proc_display(f"ansible all -i {host_path} -m shell -a "
-                       "'rpm -qa > rpm_pre_list.txt'",
-                       shell=True)
- 
    elif (task == 'configure_spectrum_conductor.yml'):
 
 #usr_space
@@ -170,10 +166,6 @@ def pre_post_file_collect(task):
       sub_proc_display(f"ansible all -i {host_path} -m shell -a "
                        "'yum list installed | sed 1,2d | xargs -n3 | column -t > yum_post_list.txt'",
                        shell=True)      
-
-      sub_proc_display(f"ansible all -i {host_path} -m shell -a "
-                       "'rpm -qa > rpm_post_list.txt'",
-                       shell=True)
 
 def ENGR_MODE(task):
    ENGR_MODE_STATUS = True  
