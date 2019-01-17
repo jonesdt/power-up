@@ -65,7 +65,7 @@ def pre_post_file_collect(task):
    if (task in tasks_list):
 
       sub_proc_display(f"ansible all -i {host_path} -m shell -a "
-                       "'yum list installed | sed 1,2d | xargs -n3 | column -t > yum_pre_list.txt'",
+                       "'yum list installed | sed 1,2d | xargs -n3 | column -t > client_yum_pre_list.txt'",
                        shell=True)
 
    elif (task == 'configure_spectrum_conductor.yml'):
@@ -163,7 +163,7 @@ def pre_post_file_collect(task):
 
    elif (task == 'powerai_tuning.yml'):
       sub_proc_display(f"ansible all -i {host_path} -m shell -a "
-                       "'yum list installed | sed 1,2d | xargs -n3 | column -t > yum_post_list.txt'",
+                       "'yum list installed | sed 1,2d | xargs -n3 | column -t > client_yum_post_list.txt'",
                        shell=True)      
 
 def ENGR_MODE(task):
