@@ -32,6 +32,7 @@ GEN_PLAY_PATH = os.path.join(GEN_PATH, 'playbooks', '')
 GEN_PASSIVE_PATH = os.path.join(GEN_PATH, 'passive', '')
 GEN_LOGS_PATH = os.path.join(GEN_PATH, 'logs', '')
 GEN_SOFTWARE_PATH = os.path.join(GEN_PATH, 'software', '')
+GEN_SAMPLE_CONFIGS_PATH = os.path.join(GEN_PATH, 'sample-configs', '')
 OPSYS = platform.dist()[0]
 DEFAULT_CONTAINER_NAME = PROJECT_NAME
 CONTAINER_PACKAGE_PATH = '/opt/' + PROJECT_NAME
@@ -137,28 +138,6 @@ def get_container_name(config_path=None):
     return DEFAULT_CONTAINER_NAME + '-pxe' + cont_vlan
 
 
-def is_container_running():
-    cont_running = False
-    lxc_ls_output = subprocess.check_output(['bash', '-c', 'lxc-ls -f']
-                                            ).decode("utf-8")
-    lxc_ls_output_search = re.search(r'^%s\d+\s+RUNNING' %
-                                     (DEFAULT_CONTAINER_NAME + '-pxe'),
-                                     lxc_ls_output, re.MULTILINE)
-    if lxc_ls_output_search is not None:
-        cont_running = True
-    return cont_running
-
-
-def container_addr():
-    cont_address = None
-    lxc_ls_output = subprocess.check_output(['bash', '-c', 'sudo lxc-ls -f']
-                                            ).decode("utf-8")
-    cont_address = re.search(r'(\S+),\s+(\S+),', lxc_ls_output, re.MULTILINE)
-    if cont_address is None:
-        return None
-    return cont_address.group(2)
-
-
 def is_container():
     return os.path.isfile(os.path.join(
         CONTAINER_PACKAGE_PATH, CONTAINER_ID_FILE))
@@ -205,6 +184,8 @@ def get_package_path():
         return get_container_package_path()
     return GEN_PATH
 
+def get_sample_configs_path():
+    return GEN_SAMPLE_CONFIGS_PATH
 
 def get_scripts_path():
     if is_container():
