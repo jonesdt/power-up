@@ -1,0 +1,5 @@
+Looking in indexes: http://9.3.89.63/repos/pypi/simple
+Collecting boto
+  Downloading http://9.3.89.63/repos/pypi/simple/boto/boto-2.49.0-py2.py3-none-any.whl (1.4MB)
+  Saved /srv/repos/pypi/boto-2.49.0-py2.py3-none-any.whl
+Successfully downloaded boto
