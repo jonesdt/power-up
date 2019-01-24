@@ -204,6 +204,8 @@ class engr_delta_collect:
             suffix = value_c[1]
             new_value = "{}=={}".format(prefix,suffix)
             pip_dbfile.write('{}\n'.format(new_value))
+        
+         print ("PIP Format Completed")
 
       def conda_formatter(self):
 
@@ -215,6 +217,8 @@ class engr_delta_collect:
             version = value_d[1]
             new_value = ("{}-{}-{}.tar.bz2"
                         .format(prefix,version,suffix))
+
+         print ("Conda Format Completed")
 
 def automator(self):
 
@@ -257,43 +261,49 @@ post_list_file = [
                   'dlipy3_conda_post_install.txt',
                   'dlipy2_conda_post_install.txt',
                  ]
-
+print("\nComposing Yum Package Delta list from Client")
 client_yum = engr_delta_collect(pre_list_file[0],post_list_file[0])
 engr_delta_collect.pre_package_lister(client_yum)
 engr_delta_collect.post_package_lister(client_yum)
 engr_delta_collect.delta_logic(client_yum)
 engr_delta_collect.yum_formatter(client_yum)
 
+print("\nComposing PIP Package Delta list from Client")
 client_pip = engr_delta_collect(pre_list_file[1],post_list_file[1])
 engr_delta_collect.pre_package_lister(client_pip)
 engr_delta_collect.post_package_lister(client_pip)
 engr_delta_collect.delta_logic(client_pip)
 engr_delta_collect.pip_formatter(client_pip)
 
+print("\nComposing PIP Package Delta list from dlipy3 environment")
 dlipy3_pip = engr_delta_collect(pre_list_file[2],post_list_file[2])
 engr_delta_collect.pre_package_lister(dlipy3_pip)
 engr_delta_collect.post_package_lister(dlipy3_pip)
 engr_delta_collect.delta_logic(dlipy3_pip)
 engr_delta_collect.pip_formatter(dlipy3_pip)
 
+print("\nComposing PIP Package Delta list from dlipy2 environment")
 dlipy2_pip = engr_delta_collect(pre_list_file[3],post_list_file[3])
 engr_delta_collect.pre_package_lister(dlipy2_pip)
 engr_delta_collect.post_package_lister(dlipy2_pip)
 engr_delta_collect.delta_logic(dlipy2_pip)
 engr_delta_collect.pip_formatter(dlipy2_pip)
 
+print("\nComposing Conda Package Delta list from Client")
 client_conda = engr_delta_collect(pre_list_file[4],post_list_file[4])
 engr_delta_collect.pre_package_lister(client_conda)
 engr_delta_collect.post_package_lister(client_conda)
 engr_delta_collect.delta_logic(client_conda)
 engr_delta_collect.conda_formatter(client_conda)
 
+print("\nComposing Conda Package Delta list from dlipy3 environment")
 dlipy3_conda = engr_delta_collect(pre_list_file[5],post_list_file[5])
 engr_delta_collect.pre_package_lister(dlipy3_conda)
 engr_delta_collect.post_package_lister(dlipy3_conda)
 engr_delta_collect.delta_logic(dlipy3_conda)
 engr_delta_collect.conda_formatter(dlipy3_conda)
 
+print("\nComposing Conda Package Delta list from dlipy2 environment")
 dlipy2_conda = engr_delta_collect(pre_list_file[6],post_list_file[6])
 engr_delta_collect.pre_package_lister(dlipy2_conda)
 engr_delta_collect.post_package_lister(dlipy2_conda)
