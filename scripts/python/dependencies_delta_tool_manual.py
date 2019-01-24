@@ -27,23 +27,23 @@ cwd = os.getcwd()
 print("Current working directory is:", cwd) 
 os.system("ls -l /home/jonest/power-up/logs/dependencies")
 
-pre_file  = str(raw_input('Enter pre_install.txt File: ')) #used only in manual_menu_process
-post_file = str(raw_input('Enter post_install.txt File: '))#used only in manual_menu_process
+pre_file  = str(raw_input('Enter pre_install.txt File: '))
+post_file = str(raw_input('Enter post_install.txt File: '))
 
-#pre_dbfile  = open("{}".format(pre_file),'r')                  
-#post_dbfile = open("{}".format(post_file),'r')
+pre_dbfile  = open("{}".format(pre_file),'r')                  
+post_dbfile = open("{}".format(post_file),'r')
 
 pre_pkg_list = []                                              
 post_pkg_list = final_pkg_list = []
 
-def pre_package_lister():                                      #instance
+def pre_package_lister():                 
    pre_dbfile  = open("{}".format(pre_file),'r')
    for line_a in pre_dbfile.readlines():
       value_a = line_a.split()
       final_value_a = value_a[0]
       pre_pkg_list.append(final_value_a)
  
-def post_package_lister():                                      #instance
+def post_package_lister():                        
    post_dbfile = open("{}".format(post_file),'r')
    for line_b in post_dbfile.readlines():
       value_b = line_b.split()
@@ -53,17 +53,15 @@ def post_package_lister():                                      #instance
 pre_package_lister()
 post_package_lister()  
 
-delta_pkg_list = []                                             #global variable
+delta_pkg_list = []                     
 
-#Delta Logic
 for i in pre_pkg_list:
    for x in post_pkg_list:
       if x == i:
          delta_pkg_list.append(x)
          final_pkg_list.remove(x)
 
-#Delta File Created         
-final_file  = str(raw_input('Enter final File name: '))          #global variable 
+final_file  = str(raw_input('Enter final File name: '))   
 os.system('touch {}; chmod 777 {}'.format(final_file, final_file))
 
 with open('{}'.format(post_file)) as oldfile, open('{}'.format(final_file), 'wt+') as newfile:

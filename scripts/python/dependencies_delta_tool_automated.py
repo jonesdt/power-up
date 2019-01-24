@@ -23,8 +23,6 @@ import re
 
 import code
 
-#locate dependencies directory
-
 print '\n'
 os.chdir("/home/jonest/power-up/logs/dependencies/")
 cwd = os.getcwd()
@@ -42,7 +40,7 @@ class engr_delta_collect:
           self.post_pkg_list = final_pkg_list = []
           self.delta_pkg_list = delta_pkg_list = []
    
-      def pre_package_lister(self):  #parses pre-file data from the tuple of the text file in the given instance (complete)
+      def pre_package_lister(self): 
 
         pre_dbfile  = open("{}".format(self.pre_list_file),'r')
         for line_a in pre_dbfile.readlines():
@@ -53,9 +51,7 @@ class engr_delta_collect:
         print "pre_package_lister completed"
         return self.pre_pkg_list
          
-        code.interact(banner='DEBUG!!!!!', local=dict(globals(), **locals()))
-
-      def post_package_lister(self):  #parses post-file data from the tuple of the text file in the given instance (complete)
+      def post_package_lister(self):  
 
         pre_dbfile  = open("{}".format(self.post_list_file),'r')
         for line_a in pre_dbfile.readlines():
@@ -66,7 +62,7 @@ class engr_delta_collect:
         print "post_package_lister completed"
         return self.post_pkg_list
 
-      def delta_logic(self): #find delta from pre and post package list and add to delta delta_pkg_list.
+      def delta_logic(self): 
 
          for i in self.pre_pkg_list:
             for x in self.post_pkg_list:
@@ -195,11 +191,11 @@ class engr_delta_collect:
             new_value = "{}-{}.{}".format(prefix,version,suffix)
             yum_installed_dbfile.write('{}\n'.format(new_value))
 
-         os.system("sudo rm -rf tmp* {} ".format(self.final_file)) #creates temperary files, sorts between repositories, formats in proper form and adds to text file.
+         os.system("sudo rm -rf tmp* {} ".format(self.final_file)) 
 
          print ("Yum Format Completed") 
 
-      def pip_formatter(self):#executes pip_formatter based from pip output file and formats in proper form and adds to text file.
+      def pip_formatter(self): 
 
          pip_dbfile = open('{}'.format(self.final_file),'rb+')
          for line_c in pip_dbfile.readlines():
@@ -231,16 +227,14 @@ def automator(self):
    post_package_lister()
    delta_logic()
 
-   #code.interact(banner='automator', local=dict(globals(), **locals()))
-
    if (function == 'yum'):
-      print('yum') #call yum gathering tool
+      print('yum') 
       yum_formatter()
    elif (function == 'pip'):
-      print('pip') #call pip gathering tool
+      print('pip') 
       pip_formatter()
    elif (function == 'conda'):
-      print ('conda') #call conda gathering tool
+      print ('conda') 
       conda_formatter()
 
 
@@ -305,4 +299,6 @@ engr_delta_collect.pre_package_lister(dlipy2_conda)
 engr_delta_collect.post_package_lister(dlipy2_conda)
 engr_delta_collect.delta_logic(dlipy2_conda)
 engr_delta_collect.conda_formatter(dlipy2_conda)
+
+
 
