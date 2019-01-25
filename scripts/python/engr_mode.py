@@ -33,6 +33,8 @@ from lib.utilities import sub_proc_display, sub_proc_exec, heading1, Color, \
 #client='rhel75'
 
 def dependency_folder_collector():
+   #sub_proc_display("ansible-fetch copy_text_files_from_client.yml",
+   #                 shell=True)
    dependencies_path = get_logs_path() +'/dependencies'
    if not os.path.exists('{}'.format(dependencies_path)):
           os.makedirs('{}'.format(dependencies_path))
