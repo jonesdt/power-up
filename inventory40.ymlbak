@@ -1,0 +1,52 @@
+nodes:
+-   label: power_servers
+    hostname: server-1
+    rack_id: rack_1
+    bmc_type: openbmc
+    ipmi:
+        ipaddrs:
+        - 192.168.30.21
+        macs:
+        - 08:94:ef:80:19:07
+        password: 0penBmc
+        ports:
+        - 4
+        switches:
+        - mgmt_1_1
+        userid: root
+    pxe:
+        devices:
+        - eth15
+        ipaddrs:
+        - 192.168.40.21
+        macs:
+        - 98:be:94:78:5c:06
+        ports:
+        - 14
+        rename:
+        - true
+        switches:
+        - mgmt_1_1
+    data:
+        devices: []
+        macs: []
+        ports: []
+        rename: []
+        switches: []
+    os:
+        hostname_prefix: server
+        profile: RHEL-ALT-7.6-20181010.0-Server-ppc64le-dvd1.iso
+        install_device: /dev/sda
+        users:
+        -   name: paieuser
+            password: $6$PU.px9msp0y.c$LoMKL6z1es7g/9brPiCKxhwtt8LvPBQ13FjNWzJFdNVdzadgvvgfAqFGE6QzhXOAdyDKo/CAkM1Q1.ot4Np1j/
+            groups: wheel
+    roles: null
+    interfaces:
+    -   label: pxe_ifc
+        description: pxe interface
+        DEVICE: eth15
+        TYPE: Ethernet
+        BOOTPROTO: dhcp
+        ONBOOT: true
+        NM_CONTROLLED: false

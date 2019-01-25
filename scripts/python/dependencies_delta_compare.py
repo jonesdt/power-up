@@ -24,6 +24,7 @@ import re
 print '\n'
 os.chdir("/home/jonest/power-up/logs/dependencies/")
 
+<<<<<<< HEAD
 class MyClass:
    def __init__(self):
       self.pre_file  = str(raw_input('Enter pre_install.txt File: '))
@@ -53,6 +54,75 @@ class MyClass:
                        'client_conda_post_install.txt',
                        'dlipy3_conda_post_install.txt',
                        'dlipy2_conda_post_install.txt',
+=======
+pre_file  = str(raw_input('Enter pre_install.txt File: ')) #used only in manual_menu_process
+post_file = str(raw_input('Enter post_install.txt File: '))#used only in manual_menu_process
+
+#pre_dbfile  = open("{}".format(pre_file),'r')                  
+#post_dbfile = open("{}".format(post_file),'r')
+
+pre_pkg_list = []                                              
+post_pkg_list = final_pkg_list = []
+
+def pre_package_lister():                                      #instance
+   pre_dbfile  = open("{}".format(pre_file),'r')
+   for line_a in pre_dbfile.readlines():
+      value_a = line_a.split()
+      final_value_a = value_a[0]
+      pre_pkg_list.append(final_value_a)
+ 
+def post_package_lister():                                      #instance
+   post_dbfile = open("{}".format(post_file),'r')
+   for line_b in post_dbfile.readlines():
+      value_b = line_b.split()
+      final_value_b = value_b[0]
+      post_pkg_list.append(final_value_b)
+
+pre_package_lister()
+post_package_lister()  
+
+delta_pkg_list = []                                             #global variable
+
+#Delta Logic
+for i in pre_pkg_list:
+   for x in post_pkg_list:
+      if x == i:
+         delta_pkg_list.append(x)
+         final_pkg_list.remove(x)
+
+#Delta File Created         
+final_file  = str(raw_input('Enter final File name: '))          #global variable 
+os.system('touch {}; chmod 777 {}'.format(final_file, final_file))
+
+with open('{}'.format(post_file)) as oldfile, open('{}'.format(final_file), 'wt+') as newfile:
+   for line in oldfile:
+      if any(pkg in line for pkg in final_pkg_list):
+         newfile.write(line)
+
+print "Results:\n"
+print final_pkg_list 
+print '\n'
+
+format_menu = True
+while format_menu == True: 
+   yml_file = str(raw_input("Would you like to format for pkglist.yml file? "
+                           "\n(1)Yes \n(2)No \n"))
+   if yml_file == '2':
+      format_menu = False
+
+   elif yml_file == '1':
+      pkg_type_select = str(raw_input("Select Format Type: "
+                                     "\n(3)Yum \n(4)PIP \n(5)Conda \n"))
+      if pkg_type_select == '3':
+
+         dep_search = [
+                       'anaconda',
+                       'cuda-powerup',
+                       'powerai-powerup',
+                       'dependencies-powerup',
+                       'epel-ppc64le-powerup',
+                       'installed',
+>>>>>>> e4a385e6deecbc201821ee14d362946878ab94fe
                       ]
       
       self.final_file  = str(raw_input('Enter final File name: '))

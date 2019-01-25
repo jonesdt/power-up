@@ -1,0 +1,35 @@
+---
+
+#command to run ansible-fetch copy_text_files_from_client.yml 
+#ansible-fetch website: https://docs.ansible.com/ansible/latest/modules/fetch_module.html 
+# Store file into /tmp/fetched/host.example.com/tmp/somefile
+- fetch:
+    src: ~/client_yum_pre_list.txt, 
+         ~/client_pip_pre_install.txt, 
+         ~/dlipy3_pip_pre_install.txt, 
+         ~/dlipy2_pip_pre_install.txt, 
+         ~/client_conda_pre_install.txt, 
+         ~/dlipy3_conda_pre_install.txt,
+         ~/dlipy2_conda_pre_install.txt,
+         ~/client_yum_post_list.txt, 
+         ~/client_pip_post_install.txt,
+         ~/dlipy3_pip_post_install.txt,
+         ~/dlipy2_pip_post_install.txt,
+         ~/client_conda_post_install.txt,
+         ~/dlipy3_conda_post_install.txt,
+         ~/dlipy2_conda_post_install.txt,
+
+   dest: ~/power-up/logs/dependencies/
+
+# Specifying a path directly
+- fetch:
+    src: ~/*.txt
+   dest: ~/prefix-{{ inventory_hostname }}/
+   flat: yes
+
+# Specifying a destination path
+- fetch:
+    src: ~/*.txt
+   dest: ~/power-up/logs/dependencies/
+   flat: yes
+
