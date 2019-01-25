@@ -20,33 +20,63 @@ import argparse
 import os
 import sys
 import re
+import subprocess
+import code 
 
 import lib.logger as logger
 from lib.genesis import GEN_PATH, GEN_SOFTWARE_PATH, get_ansible_playbook_path, get_playbooks_path, get_logs_path
 from lib.utilities import sub_proc_display, sub_proc_exec, heading1, Color, \
     get_selection, get_yesno, rlinput, bold, ansible_pprint, replace_regex
 
-#Global_Prameters
-#
-#ENGR_MODE_STATUS=False
-#user='jonesdt'
-#client='rhel75'
 
 def dependency_folder_collector():
+
    dependencies_path = get_logs_path() +'/dependencies'
    if not os.path.exists('{}'.format(dependencies_path)):
           os.makedirs('{}'.format(dependencies_path))
-   user='jonest'
-   client='rhel75'   
-   sub_proc_display("scp -r {}@192.168.47.21:/home/{}/"
-                   "*.txt /home/{}/power-up/logs/dependencies"
-                   .format(client, client, user) ,shell=True)
 
+										   #client
 def pre_post_file_collect(task):
+
+   def file_collecter(file_name):
+
+      #current_user    = input("Enter current user: ")
+      #client_user     = input("Enter client user: ")
+      #client_hostname = input("Enter client hostname or IP: ")
+
+      current_user    = 'jonest' 
+      client_user     = 'paieuser'
+      client_hostname = '192.168.40.21'
+
+      remote_prefix   = f"{client_user}@{client_hostname}"
+      remote_location = f":/home/{client_user}/"
+      remote_file     = f"{file_name}"
+      remote_suffix   = f" /home/{current_user}/power-up/logs/dependencies"
+
+      data_copy_cmd  = "scp -r "+remote_prefix+remote_location+remote_file+remote_suffix 
+      ansible_prefix = f"ansible all -i {host_path} -m shell -a "
+     
+      print ("\nINFO - Checking for File on Client Node\n")
+      cmd = "ssh paieuser@server-1 ls | grep yum_pre_list.txt"
+      find_file, err, rc = sub_proc_exec(cmd, shell=True)
+      find_file_formatted = find_file.rstrip("\n\r")
+
+      if find_file_formatted == f'{file_name}':
+         print ("\nINFO - File Exists on Client Node")
+         pass
+      else:
+         print (f"\nINFO - Creating {file_name} on Client Node")
+         sub_proc_display(f"ansible all -i {host_path} -m shell -a "
+                          "'yum list installed | sed 1,2d | xargs -n3 "
+                          f"| column -t > {file_name}'",
+                          shell=True)
+
+      print (f"\nINFO - Copying {file_name} to Deployer\n")
+      sub_proc_display(f'{data_copy_cmd}', shell=True)
 
    host_path = get_playbooks_path() +'/software_hosts'
    tasks_list = [
-                  'yum_update_cache.yml',
+                 'yum_update_cache.yml',
 #                 'yum_install_additional_software.yml',
 #                 'update_kernel.yml',
 #                 'disable_udev_mem_auto_onlining.yml',
@@ -63,24 +93,24 @@ def pre_post_file_collect(task):
                  ] 
   
    if (task in tasks_list):
+      file_collecter(file_name='yum_pre_list.txt')
 
-      sub_proc_display(f"ansible all -i {host_path} -m shell -a "
-                       "'yum list installed | sed 1,2d | xargs -n3 | column -t > yum_pre_list.txt'",
-                       shell=True)
+      #code.interact(banner='Debug', local=dict(globals(), **locals()))  
 
    elif (task == 'configure_spectrum_conductor.yml'):
+      file_collecter('client_pip_pre_install.txt.txt')
 
-#usr_space
       # Gather pre pip_list from user
       sub_proc_display(f"ansible all -i {host_path} -m shell -a "
                        "'/opt/anaconda3/bin/pip list > "
                        "client_pip_pre_install.txt'",
                        shell=True)
+
       # Gather pre conda_list from user
       sub_proc_display(f"ansible all -i {host_path} -m shell -a "
                        "'conda list > client_conda_pre_install.txt'",
                        shell=True)
-#dlipy3_env
+										#dlipy3_env
       # Create dlipy3 test environment
       sub_proc_display(f"ansible all -i {host_path} -m shell -a "
                        "'/opt/anaconda3/bin/conda "
@@ -102,7 +132,7 @@ def pre_post_file_collect(task):
 #                       "'source /opt/anaconda3/bin/deactivate dlipy3_test ",
 #                       shell=True)
       
-#dlipy2_env
+										#dlipy2_env
       # Create dlipy2_test environment
       sub_proc_display(f"ansible all -i {host_path} -m shell -a "
                        "'/opt/anaconda3/bin/conda "
@@ -126,7 +156,7 @@ def pre_post_file_collect(task):
 
    elif (task == 'entitle_spectrum_conductor_dli.yml'):
 
-#post_client
+										#post_client
       # Gather post pip_list from user
       sub_proc_display(f"ansible all -i {host_path} -m shell -a "
                        "'/opt/anaconda3/bin/pip list > "
@@ -166,14 +196,13 @@ def pre_post_file_collect(task):
                        "'yum list installed | sed 1,2d | xargs -n3 | column -t > yum_post_list.txt'",
                        shell=True)      
 
-def ENGR_MODE(task):
-   ENGR_MODE_STATUS = True  
-   if ENGR_MODE_STATUS == False:
-      pass
-   else:
-      pre_post_file_collector(task)
+#def ENGR_MODE(task):
+#   ENGR_MODE_STATUS = True  
+#   if ENGR_MODE_STATUS == False:
+#      pass
+#   else:
+#      pre_post_file_collector(task)
 
-#to find Delts, RUN "dependencies_delta_compare.py" located in /power-up/scripts/python
 
 
        
