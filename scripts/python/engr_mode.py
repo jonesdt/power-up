@@ -100,7 +100,7 @@ def pre_post_file_collect(task):
                sub_proc_display(f'{data_copy_cmd}', shell=True)
                menu = False
             elif override == "3":
-               print ("Exiting installer")
+               print ("Exiting installer.")
                sub_proc_display('sys.exit()', shell=True)
                menu = False
             else:
