@@ -24,17 +24,18 @@ import re
 import code
 
 print '\n'
-os.chdir("/home/jonest/power-up/logs/dependencies/")
+os.chdir("/home/jonest/power-up/logs/dependencies/_data_backup")
 cwd = os.getcwd()
-print("Current working directory is:", cwd)
+print("\n*ENGINEERING MODE* INFO - Current working directory is: \n", cwd)
 
-class engr_delta_collect:
+class engr_delta_collect():
 
       def __init__(self,pre_list_file,post_list_file):
 
           self.pre_list_file = pre_list_file
           self.post_list_file = post_list_file
-          self.final_file = final_file = pre_list_file.split('_',3)[0] + "_" + pre_list_file.split('_',3)[1] +'_pkglist_final.txt'
+          self.final_file = final_file = (pre_list_file.split('_',3)[0] + "_" + pre_list_file.split('_',3)[1] + '_pkglist_final.txt')
+
           self.post_list_file = post_list_file
           self.pre_pkg_list = pre_pkg_list = []
           self.post_pkg_list = final_pkg_list = []
@@ -48,7 +49,7 @@ class engr_delta_collect:
            final_value_a = value_a[0]
            self.pre_pkg_list.append(final_value_a)
 
-        print "pre_package_lister completed"
+        print "\n*ENGINEERING MODE* INFO - Pre Data loaded\n"
         return self.pre_pkg_list
          
       def post_package_lister(self):  
@@ -59,7 +60,7 @@ class engr_delta_collect:
            final_value_a = value_a[0]
            self.post_pkg_list.append(final_value_a)
 
-        print "post_package_lister completed"
+        print "\n*ENGINEERING MODE* INFO - Post Data Loaded\n"
         return self.post_pkg_list
 
       def delta_logic(self): 
@@ -76,7 +77,7 @@ class engr_delta_collect:
                if any(pkg in line for pkg in self.post_pkg_list):
                   newfile.write(line)
 
-         print "Results:\n"
+         print "\n*ENGINEERING MODE* INFO - Delta Results:\n"
          print self.post_pkg_list
          print '\n'
 
@@ -193,7 +194,7 @@ class engr_delta_collect:
 
          os.system("sudo rm -rf tmp* {} ".format(self.final_file)) 
 
-         print ("Yum Format Completed") 
+         print ("\n*ENGINEERING MODE* INFO - Yum format completed\n") 
 
       def pip_formatter(self): 
 
@@ -205,7 +206,7 @@ class engr_delta_collect:
             new_value = "{}=={}".format(prefix,suffix)
             pip_dbfile.write('{}\n'.format(new_value))
         
-         print ("PIP Format Completed")
+         print ("\n*ENGINEERING MODE* INFO - Pip format Completed\n")
 
       def conda_formatter(self):
 
@@ -218,12 +219,12 @@ class engr_delta_collect:
             new_value = ("{}-{}-{}.tar.bz2"
                         .format(prefix,version,suffix))
 
-         print ("Conda Format Completed")
+         print ("\n*ENGINEERING MODE* INFO - Conda format completed\n")
 
 ##START##
 
 pre_list_file = [
-                 'client_yum_pre_list.txt',
+                'client_yum_pre_list.txt',
                  'client_pip_pre_install.txt',
                  'dlipy3_pip_pre_install.txt',
                  'dlipy2_pip_pre_install.txt',
@@ -242,92 +243,132 @@ post_list_file = [
                   'dlipy2_conda_post_install.txt',
                  ]
 
-#print("\nComposing Yum Package Delta list from Client")
-#client_yum = engr_delta_collect(pre_list_file[0],post_list_file[0])
-#engr_delta_collect.pre_package_lister(client_yum)
-#engr_delta_collect.post_package_lister(client_yum)
-#engr_delta_collect.delta_logic(client_yum)
-#engr_delta_collect.yum_formatter(client_yum)
 
-#print("\nComposing PIP Package Delta list from Client")
-#client_pip = engr_delta_collect(pre_list_file[1],post_list_file[1])
-#engr_delta_collect.pre_package_lister(client_pip)
-#engr_delta_collect.post_package_lister(client_pip)
-#engr_delta_collect.delta_logic(client_pip)
-#engr_delta_collect.pip_formatter(client_pip)
+print("\n*ENGINEERING MODE* INFO - Composing yum package delta list from client\n")
+client_yum = engr_delta_collect(pre_list_file[0],post_list_file[0])
+engr_delta_collect.pre_package_lister(client_yum)
+engr_delta_collect.post_package_lister(client_yum)
+engr_delta_collect.delta_logic(client_yum)
+engr_delta_collect.yum_formatter(client_yum)
 
-#print("\nComposing PIP Package Delta list from dlipy3 environment")
-#dlipy3_pip = engr_delta_collect(pre_list_file[2],post_list_file[2])
-#engr_delta_collect.pre_package_lister(dlipy3_pip)
-#engr_delta_collect.post_package_lister(dlipy3_pip)
-#engr_delta_collect.delta_logic(dlipy3_pip)
-#engr_delta_collect.pip_formatter(dlipy3_pip)
+print("\n*ENGINEERING MODE* INFO - Composing pip package delta list from client\n")
+client_pip = engr_delta_collect(pre_list_file[1],post_list_file[1])
+engr_delta_collect.pre_package_lister(client_pip)
+engr_delta_collect.post_package_lister(client_pip)
+engr_delta_collect.delta_logic(client_pip)
+engr_delta_collect.pip_formatter(client_pip)
 
-#print("\nComposing PIP Package Delta list from dlipy2 environment")
-#dlipy2_pip = engr_delta_collect(pre_list_file[3],post_list_file[3])
-#engr_delta_collect.pre_package_lister(dlipy2_pip)
-#engr_delta_collect.post_package_lister(dlipy2_pip)
-#engr_delta_collect.delta_logic(dlipy2_pip)
-#engr_delta_collect.pip_formatter(dlipy2_pip)
+print("\n*ENGINEERING MODE* INFO - Composing pip package delta list from dlipy3 environment\n")
+dlipy3_pip = engr_delta_collect(pre_list_file[2],post_list_file[2])
+engr_delta_collect.pre_package_lister(dlipy3_pip)
+engr_delta_collect.post_package_lister(dlipy3_pip)
+engr_delta_collect.delta_logic(dlipy3_pip)
+engr_delta_collect.pip_formatter(dlipy3_pip)
 
-#print("\nComposing Conda Package Delta list from Client")
-#client_conda = engr_delta_collect(pre_list_file[4],post_list_file[4])
-#engr_delta_collect.pre_package_lister(client_conda)
-#engr_delta_collect.post_package_lister(client_conda)
-#engr_delta_collect.delta_logic(client_conda)
-#engr_delta_collect.conda_formatter(client_conda)
+print("\n*ENGINEERING MODE* INFO - Composing pip package delta list from dlipy2 environment\n")
+dlipy2_pip = engr_delta_collect(pre_list_file[3],post_list_file[3])
+engr_delta_collect.pre_package_lister(dlipy2_pip)
+engr_delta_collect.post_package_lister(dlipy2_pip)
+engr_delta_collect.delta_logic(dlipy2_pip)
+engr_delta_collect.pip_formatter(dlipy2_pip)
 
-#print("\nComposing Conda Package Delta list from dlipy3 environment")
-#dlipy3_conda = engr_delta_collect(pre_list_file[5],post_list_file[5])
-#engr_delta_collect.pre_package_lister(dlipy3_conda)
-#engr_delta_collect.post_package_lister(dlipy3_conda)
-#engr_delta_collect.delta_logic(dlipy3_conda)
-#engr_delta_collect.conda_formatter(dlipy3_conda)
+print("\n*ENGINEERING MODE* INFO - Composing conda package delta list from client\n")
+client_conda = engr_delta_collect(pre_list_file[4],post_list_file[4])
+engr_delta_collect.pre_package_lister(client_conda)
+engr_delta_collect.post_package_lister(client_conda)
+engr_delta_collect.delta_logic(client_conda)
+engr_delta_collect.conda_formatter(client_conda)
 
-#print("\nComposing Conda Package Delta list from dlipy2 environment")
-#dlipy2_conda = engr_delta_collect(pre_list_file[6],post_list_file[6])
-#engr_delta_collect.pre_package_lister(dlipy2_conda)
-#engr_delta_collect.post_package_lister(dlipy2_conda)
-#engr_delta_collect.delta_logic(dlipy2_conda)
-#engr_delta_collect.conda_formatter(dlipy2_conda)
+print("\n*ENGINEERING MODE* INFO - Composing conda package delta list from dlipy3 environment\n")
+dlipy3_conda = engr_delta_collect(pre_list_file[5],post_list_file[5])
+engr_delta_collect.pre_package_lister(dlipy3_conda)
+engr_delta_collect.post_package_lister(dlipy3_conda)
+engr_delta_collect.delta_logic(dlipy3_conda)
+engr_delta_collect.conda_formatter(dlipy3_conda)
+
+print("\n*ENGINEERING MODE* INFO - Composing conda package delta list from dlipy2 environment\n")
+dlipy2_conda = engr_delta_collect(pre_list_file[6],post_list_file[6])
+engr_delta_collect.pre_package_lister(dlipy2_conda)
+engr_delta_collect.post_package_lister(dlipy2_conda)
+engr_delta_collect.delta_logic(dlipy2_conda)
+engr_delta_collect.conda_formatter(dlipy2_conda)
 
 #data = [client_yum,client_pip,dlipy3_pip,dlipy2_pip,client_conda,dlipy3_conda,dlipy2_conda]
 
-def automator():
-   
-   data = [
-           client_yum,
-           client_pip,dlipy3_pip,dlipy2_pip,
-           client_conda,dlipy3_conda,dlipy2_conda
-          ]
-
-   for d in data:
-
-      function = str(d).split('_',1)[1]
-      env = str(d).split('_',1)[0]
-      
-      print("\nComposing {} Package Delta list from {} environment".format(function, env)
-
-      pre_file = "{}".format(self.pre_list_file)
-      post_file = "{}".format(self.post_list_file)
-
-      #function = self.pre_file.split('_',3)[1]
-      code.interact(banner='function status', local=dict(globals(), **locals()))  
-
-      engr_delta_collect.pre_package_lister(d) 
-      engr_delta_collect.post_package_lister(d)
-      engr_delta_collect.delta_logic(d)
-
-      if (function == 'yum'):
-         print('yum')
-         yum_formatter(d)
-      elif (function == 'pip'):
-         print('pip')
-         pip_formatter(d)
-      elif (function == 'conda'):
-         print ('conda')
-         conda_formatter(d)
-
-automator()
+#def automator():
+# 
+#   pre_list_file = [
+#                    'client_yum_pre_list.txt',
+#                    'client_pip_pre_install.txt',
+#                    'dlipy3_pip_pre_install.txt',
+#                    'dlipy2_pip_pre_install.txt',
+#                    'client_conda_pre_install.txt',
+#                    'dlipy3_conda_pre_install.txt',
+#                    'dlipy2_conda_pre_install.txt',
+#                   ]
+#   
+#   post_list_file = [
+#                     'client_yum_post_list.txt',
+#                     'client_pip_post_install.txt',
+#                     'dlipy3_pip_post_install.txt',
+#                     'dlipy2_pip_post_install.txt',
+#                     'client_conda_post_install.txt',
+#                     'dlipy3_conda_post_install.txt',
+#                     'dlipy2_conda_post_install.txt',
+#                    ]
+#   
+#   client_yum   = [pre_list_file[0],post_list_file[0]]
+#   client_pip   = [pre_list_file[1],post_list_file[1]]
+#   dlipy3_pip   = [pre_list_file[2],post_list_file[2]]
+#   dlipy2_pip   = [pre_list_file[3],post_list_file[3]]
+#   client_conda = [pre_list_file[4],post_list_file[4]]
+#   dlipy3_conda = [pre_list_file[5],post_list_file[5]]
+#   dlipy2_conda = [pre_list_file[6],post_list_file[6]]
+#    
+#   data = [
+#           client_yum,
+#           client_pip,dlipy3_pip,dlipy2_pip,
+#           client_conda,dlipy3_conda,dlipy2_conda
+#          ]
+#
+#   for d in data:
+#
+#      current_task = engr_delta_collect(d[0],d[1])
+#
+#      function = d[0].split('_',4)[1]
+#      env      = d[0].split('_',4)[0]
+#      phase    = d[0].split('_',4)[2]
+#      stage    = d[0].split('_',4)[0] +'_' + d[0].split('_',4)[1]
+#      
+#      print("\n*ENGINEERING MODE* INFO - Composing '{}' package delta "
+#           "list from '{}' environment".format(function, env))
+#
+#      #code.interact(banner='function status', local=dict(globals(), **locals()))  
+#      
+#      print ("\n*ENGINEERING MODE* INFO - Loading Data\n")
+#      pre  = engr_delta_collect.pre_package_lister() 
+#      post = engr_delta_collect.post_package_lister(stage)
+#      print ("\n*ENGINEERING MODE* INFO - Composing Delta Data\n")
+#      delta = engr_delta_collect.delta_logic(d)
+#
+#      code.interact(banner='function status', local=dict(globals(), **locals()))
+#
+#      if (function == 'yum'):
+#         print("\n*ENGINEERING MODE* INFO - Structuring 'yum' Delta Data\n")
+#         yum_formatter(d)
+#      elif (function == 'pip'):
+#         print("\n*ENGINEERING MODE* INFO - Structuring 'pip' Delta Data\n")
+#         pip_formatter(d)
+#      elif (function == 'conda'):
+#         print("\n*ENGINEERING MODE* INFO - Structuring 'conda' Delta Data\n")
+#         conda_formatter(d)
+#      else:
+#         print ("ERROR: Invalid Match - Exiting")
+#         sys.exit()
+#
+#
+#automator()
 
 print("Done.")
+#
+#
