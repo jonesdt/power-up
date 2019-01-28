@@ -42,7 +42,7 @@ from software_hosts import get_ansible_inventory, validate_software_inventory
 from lib.utilities import sub_proc_display, sub_proc_exec, heading1, Color, \
     get_selection, get_yesno, rlinput, bold, ansible_pprint, replace_regex
 from lib.genesis import GEN_SOFTWARE_PATH, get_ansible_playbook_path, get_playbooks_path, get_logs_path
-from engr_mode import ENGR_MODE,  pre_post_file_collect, dependency_folder_collector
+from engr_mode import pre_post_file_collect, dependency_folder_collector
 
 
 class software(object):
@@ -1026,7 +1026,7 @@ class software(object):
                 noarch_url = os.path.split(url.rstrip('/'))[0] + '/noarch/'
                 repo.sync_ana(noarch_url, rejlist=rl)
 
-        # Setup Anaconda conda-forge Repo.  (not a YUM repo)
+        #  Setup Anaconda conda-forge Repo.  (not a YUM repo)
         repo_id = 'anaconda'
         repo_name = 'Conda-forge noarch Repository'
         baseurl = 'https://conda.anaconda.org/conda-forge/noarch/'
@@ -1463,6 +1463,8 @@ class software(object):
 
         install_tasks = yaml.load(open(GEN_SOFTWARE_PATH +
                                        f'{self.my_name}_install_procedure.yml'))
+        dependency_folder_collector()
+
         for task in install_tasks:
             heading1(f"Client Node Action: {task['description']}")
             if task['description'] == "Install Anaconda installer":
@@ -1478,9 +1480,7 @@ class software(object):
                 extra_args = f"--limit \'{task['hosts']},localhost\'"
             self._run_ansible_tasks(task['tasks'], extra_args)
             host_path = get_playbooks_path() +'/software_hosts'
-            #ENGR_MODE(task['tasks'])
             pre_post_file_collect(task['tasks'])
-        dependency_folder_collector()
         print('Done')
 
     def _run_ansible_tasks(self, tasks_path, extra_args=''):
