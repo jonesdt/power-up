@@ -1,0 +1,17 @@
+- name: Set installation directory variable
+  set_fact:
+    install_dir: "/opt/anaconda3"
+
+- name: Get route to client
+  command: "{{ hostvars['localhost']['python_executable_local'] }} \
+  {{ hostvars['localhost']['scripts_path_local'] }}/python/ip_route_get_to.py \
+  {{ inventory_hostname }}"
+  delegate_to: localhost
+  register: host_ip
+
+- name: Gather yum pre install list
+  shell: "yum list installed > client_yum_pre_install.txt"
+
+- name: Gather yum pre install list
+  shell: "{install_dir}/pip list > client_yum_pre_install.txt"
+

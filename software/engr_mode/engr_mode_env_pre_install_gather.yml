@@ -1,0 +1,71 @@
+---
+- name: Set installation directory variable
+  set_fact:
+    install_dir: "/opt/anaconda3"
+
+- name: Get route to client
+  command: "{{ hostvars['localhost']['python_executable_local'] }} \
+  {{ hostvars['localhost']['scripts_path_local'] }}/python/ip_route_get_to.py \
+  {{ inventory_hostname }}"
+  delegate_to: localhost
+  register: host_ip
+
+                        #dlipy3 env
+
+- name: Check if Anaconda dlipy3_test environment already exists
+  stat:
+    path: "{{ install_dir }}/envs/dlipy3_test"
+  register: conda_dlipy3_test_env
+
+- name: "Create an Anaconda environment named dlipy3_test for initial list gather \
+         Spectrum Conductor Deep Learning Impact"
+  shell: "{{ install_dir }}/bin/conda create --name dlipy3_test --yes pip python=3.6"
+  when: not conda_dlipy3_test_env.stat.exists
+  become: yes
+
+- name: Activate dlipy3_test environment and gather post python and conda lists
+  shell: "source {{ install_dir }}/bin/activate dlipy3_test && {{ item }}"
+  loop:
+    - "conda list --explict > dlipy3_pip_pre_install.txt"
+    - "conda list --explict > dlipy3_conda_pre_install.txt"
+  become: yes
+
+                        #dlipy2 env
+
+- name: Check if Anaconda dlipy2_test environment already exists
+  stat:
+    path: "{{ install_dir }}/envs/dlipy2_test"
+  register: conda_dlipy2_test_env
+
+- name: "Create an Anaconda environment named dlipy2_test for initial list gather \
+         Spectrum Conductor Deep Learning Impact"
+  shell: "{{ install_dir }}/bin/conda create --name dlipy2_test --yes pip python=3.6"
+  when: not conda_dlipy2_test_env.stat.exists
+  become: yes
+
+- name: Activate dlipy2_test environment and gather post python and conda lists
+  shell: "source {{ install_dir }}/bin/activate dlipy2_test && {{ item }}"
+  loop:
+    - "conda list --explict > dlipy2_pip_pre_install.txt"
+    - "conda list --explict > dlipy2_conda_pre_install.txt"
+  become: yes
+
+                        #dlinsights env
+
+- name: Check if Anaconda dlinsights_test environment already exists
+  stat:
+    path: "{{ install_dir }}/envs/dlinsights_test"
+  register: conda_dlinsights_test_env
+
+- name: "Create an Anaconda environment named dlipy3_test for initial list gather \
+         Spectrum Conductor Deep Learning Impact"
+  shell: "{{ install_dir }}/bin/conda create --name dlinsights_test --yes pip python=3.6"
+  when: not conda_dlinsights_test_env.stat.exists
+  become: yes
+
+- name: Activate dlinsights and gather post python and conda lists
+  shell: "source {{ install_dir }}/bin/activate dlinsights_test && {{ item }}"
+  loop:
+    - "conda list --explict > dlinsights_pip_pre_install.txt" 
+    - "conda list --explict > dlinsights_conda_pre_install.txt"
+  become: yes

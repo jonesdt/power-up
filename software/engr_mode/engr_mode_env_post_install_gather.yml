@@ -1,0 +1,32 @@
+---
+- name: Set installation directory variable
+  set_fact:
+    install_dir: "/opt/anaconda3"
+
+- name: Get route to client
+  command: "{{ hostvars['localhost']['python_executable_local'] }} \
+  {{ hostvars['localhost']['scripts_path_local'] }}/python/ip_route_get_to.py \
+  {{ inventory_hostname }}"
+  delegate_to: localhost
+  register: host_ip
+
+- name: Activate dlipy3_test environment and gather post python and conda lists
+  shell: "source {{ install_dir }}/bin/activate dlipy3 && {{ item }}"
+  loop:
+    - "conda list --explict > dlipy3_pip_post_install.txt"
+    - "conda list --explict > dlipy3_conda_post_install.txt"
+  become: yes
+
+- name: Activate dlipy2_test environment and gather post python and conda lists
+  shell: "source {{ install_dir }}/bin/activate dlipy2 && {{ item }}"
+  loop:
+    - "conda list --explict > dlipy2_pip_post_install.txt"
+    - "conda list --explict > dlipy2_conda_post_install.txt"
+  become: yes
+
+- name: Activate dlinsights and gather post python and conda lists
+  shell: "source {{ install_dir }}/bin/activate dlinsights && {{ item }}"
+  loop:
+    - "conda list --explict > dlinsights_pip_post_install.txt" 
+    - "conda list --explict > dlinsights_conda_post_install.txt"
+  become: yes
