@@ -1,3 +1,8 @@
+---
+vars:
+  yum_pre: client_yum_pre_install.txt
+  pip_pre: client_pip_pre_install.txt
+
 - name: Set installation directory variable
   set_fact:
     install_dir: "/opt/anaconda3"
@@ -9,9 +14,26 @@
   delegate_to: localhost
   register: host_ip
 
-- name: Gather yum pre install list
-  shell: "yum list installed > client_yum_pre_install.txt"
+- name: Check that the check if YUM pre data exists
+  stat:
+    path: /vars.yum_pre
+    msg: "Checking if data exists remotely"
+  register: yum_pre_result
 
-- name: Gather yum pre install list
-  shell: "{install_dir}/pip list > client_yum_pre_install.txt"
+- name: Create YUM pre data file, if data doesnt exist already
+  file:
+    path: / 
+    shell: "yum list installed > {{vars.yum_pre}}"
+  when: yum_pre_result.stat.exists == False
 
+- name: Check that the check if PIP pre data exists
+  stat:
+    path: /vars.pip_pre
+    msg: "Checking if data exists remotely"
+  register: pip_pre_result
+
+- name: Create PIP pre data file, if data doesnt exist already
+  file:
+    path: /
+    shell: "{{install_dir}}/pip list > {{vars.yum_pre}}"
+  when: pip_pre_result.stat.exists == False

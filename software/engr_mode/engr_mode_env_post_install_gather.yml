@@ -1,4 +1,12 @@
 ---
+vars:
+  dlipy3_pip: dlipy3_pip_post_install.txt
+  dlipy3_conda: dlipy3_conda_post_install.txt
+  dlipy2_pip: dlipy2_pip_post_install.txt
+  dlipy2_conda: dlipy2_conda_post_install.txt
+  dliinsights_pip: dlinsights_post_pre_install.txt
+  dliinsights_conda: dlinsights_conda_post_install.txt
+
 - name: Set installation directory variable
   set_fact:
     install_dir: "/opt/anaconda3"
@@ -10,23 +18,29 @@
   delegate_to: localhost
   register: host_ip
 
+                         #dlipy3 env
+
 - name: Activate dlipy3_test environment and gather post python and conda lists
   shell: "source {{ install_dir }}/bin/activate dlipy3 && {{ item }}"
   loop:
-    - "conda list --explict > dlipy3_pip_post_install.txt"
-    - "conda list --explict > dlipy3_conda_post_install.txt"
+    - "conda list --explicit > {{vars.dlipy3_pip}}"
+    - "conda list --explicit > {{vars.dlipy3_conda}}"
   become: yes
+
+                        #dlipy2 env
 
 - name: Activate dlipy2_test environment and gather post python and conda lists
   shell: "source {{ install_dir }}/bin/activate dlipy2 && {{ item }}"
   loop:
-    - "conda list --explict > dlipy2_pip_post_install.txt"
-    - "conda list --explict > dlipy2_conda_post_install.txt"
+    - "conda list --explicit > {{vars.dlipy2_pip}}"
+    - "conda list --explicit > {{vars.dlipy2_conda}}"
   become: yes
+
+                        #dlinsights env
 
 - name: Activate dlinsights and gather post python and conda lists
   shell: "source {{ install_dir }}/bin/activate dlinsights && {{ item }}"
   loop:
-    - "conda list --explict > dlinsights_pip_post_install.txt" 
-    - "conda list --explict > dlinsights_conda_post_install.txt"
+    - "conda list --explicit > {{vars.dlinsights_pip}}" 
+    - "conda list --explicit > {{vars.dlinsights_conda}}"
   become: yes
