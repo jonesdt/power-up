@@ -1,0 +1,35 @@
+---
+- name: Establish client host connection
+  client user:
+  client hostname:
+
+- name: Check if file exists on deployer node
+  client: localhost  
+  file: {file}
+    path: "get_logs_path() +'/dependencies' "
+  exists:
+    yes: #Run Menu Task#
+    no: pass
+
+- name: Check if file exists on client node
+  client: {hosts}
+  file: {file}
+    path: "/~"
+  exists:
+    yes: #Run Menu Task#
+    no: #Run Copy Command to Deployer
+
+- name: Run Menu Task
+  option1: "Override Data"
+    print: "Copying {file_name} to Deployer"
+    command: # data_copy_cmd  = f'scp -r {remote_access}:{remote_location}{dbfile} {local_dir}'  
+  option2: "Make local file as backup version"
+    print: "Backing up local data copy and copy new data to deployer node"
+    command: # mv {local_dir}{file_name} {local_dir}backup_{file_name}"    \
+             # data_copy_cmd  = f'scp -r {remote_access}:{remote_location}{dbfile} {local_dir}'
+  option3: 'Exit software installer'
+    print: "Exitting Installer"
+    command: #sys.exit()
+
+
+

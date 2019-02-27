@@ -1,0 +1,46 @@
+---
+vars:
+  yum_post: client_yum_post_install.txt
+  pip_post: client_pip_post_install.txt
+
+- name: Set installation directory variable
+  set_fact:
+    install_dir: "/opt/anaconda3"
+
+- name: Get route to client
+  command: "{{ hostvars['localhost']['python_executable_local'] }} \
+  {{ hostvars['localhost']['scripts_path_local'] }}/python/ip_route_get_to.py \
+  {{ inventory_hostname }}"
+  delegate_to: localhost
+  register: host_ip
+
+- name: Check that the check if YUM post data exists
+  stat:
+    path: /vars.yum_post
+    msg: "Checking if data exists remotely"
+  register: yum_post_result
+
+- name: Create YUM post data file, if data doesnt exist already
+  file:
+    path: /
+    shell: "yum list installed > {{vars.yum_post}}"
+  when: yum_post_result.stat.exists == False
+
+- name: Check that the check if PIP post data exists
+  stat:
+    path: /vars.pip_post
+    msg: "Checking if data exists remotely"
+  register: pip_post_result
+
+- name: Create PIP post data file, if data doesnt exist already
+  file:
+    path: /
+    shell: "{{install_dir}}/pip list > {{vars.yum_post}}"
+  when: pip_post_result.stat.exists == False
+
+
+#- name: Gather yum pre-install list
+#  shell: yum list installed > {{vars.yum_post}}
+
+#- name: Gather pip pre-install list
+#  shell: pip list > {{vars.pip_post}} 

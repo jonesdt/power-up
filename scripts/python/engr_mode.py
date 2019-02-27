@@ -23,6 +23,9 @@ import re
 import subprocess
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 8219e8fac4d78bb638ad5ca921be04bcaf644078
 import code 
 =======
 import code
@@ -37,24 +40,37 @@ import getpass
 
 import lib.logger as logger
 from lib.genesis import GEN_PATH, GEN_SOFTWARE_PATH, get_ansible_playbook_path, get_playbooks_path, get_dependencies_path
+<<<<<<< HEAD
 >>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
+=======
+>>>>>>> 935a67522e9b6e2af2571c3d8afd036ae5e38838
+>>>>>>> 8219e8fac4d78bb638ad5ca921be04bcaf644078
 from lib.utilities import sub_proc_display, sub_proc_exec, heading1, Color, \
     get_selection, get_yesno, rlinput, bold, ansible_pprint, replace_regex
 from pathlib import Path
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 def dependency_folder_collector():
    #sub_proc_display("ansible-fetch copy_text_files_from_client.yml",
    #                 shell=True)
-   dependencies_path = get_logs_path() +'/dependencies'
-   if not os.path.exists('{}'.format(dependencies_path)):
-          os.makedirs('{}'.format(dependencies_path))
 =======
 DEPENDENCIES_PATH = get_dependencies_path()
 
 def dependency_folder_collector():
+<<<<<<< HEAD
+
+>>>>>>> 8219e8fac4d78bb638ad5ca921be04bcaf644078
+   dependencies_path = get_logs_path() +'/dependencies'
+=======
    #sub_proc_display("ansible-fetch copy_text_files_from_client.yml",
    #                 shell=True)
+<<<<<<< HEAD
+   dependencies_path = get_dependencies_path()
+>>>>>>> 935a67522e9b6e2af2571c3d8afd036ae5e38838
+   if not os.path.exists('{}'.format(dependencies_path)):
+          os.makedirs('{}'.format(dependencies_path))
+=======
    if not os.path.exists('{}'.format(DEPENDENCIES_PATH)):
           os.makedirs('{}'.format(DEPENDENCIES_PATH))
 >>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
@@ -63,10 +79,15 @@ def dependency_folder_collector():
 def pre_post_file_collect(task):
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
    access = ' --become --ask-become-pas'
 
 >>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
+=======
+   access = ' --become --ask-become-pas'
+
+>>>>>>> 8219e8fac4d78bb638ad5ca921be04bcaf644078
    def file_collecter(file_name,process):
 
       #current_user    = input("Enter current user: ")
@@ -81,23 +102,38 @@ def pre_post_file_collect(task):
 =======
       current_user    = 'pupbyobu'
       client_user     = 'rhel75'
+<<<<<<< HEAD
       client_hostname = 'server-1'
 
       print (f"\n*ENGINEERING MODE* INFO - Current user: {current_user}\n")
 >>>>>>> e3717c2bda98c627b635b780979190445ee6586a
 =======
+>>>>>>> 8219e8fac4d78bb638ad5ca921be04bcaf644078
+=======
       current_user    = 'ray'
       client_user     = 'paieuser'
+>>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
       client_hostname = 'server-1'
 
       print (f"\n*ENGINEERING MODE* INFO - Current user: {current_user}\n")
+<<<<<<< HEAD
 >>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
+=======
+>>>>>>> 935a67522e9b6e2af2571c3d8afd036ae5e38838
+>>>>>>> 8219e8fac4d78bb638ad5ca921be04bcaf644078
 
       remote_access   = f"{client_user}@{client_hostname}"
       remote_location = f"/home/{client_user}/"
       dbfile          = f"{file_name}"
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 8219e8fac4d78bb638ad5ca921be04bcaf644078
       local_dir       = f"/home/{current_user}/power-up/logs/dependencies/"
+=======
+      local_dir       = dependencies_path
+>>>>>>> 935a67522e9b6e2af2571c3d8afd036ae5e38838
 =======
       local_dir       = DEPENDENCIES_PATH
 >>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
@@ -107,6 +143,9 @@ def pre_post_file_collect(task):
       ansible_prefix = f'ansible all -i {host_path} -m shell -a '
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 8219e8fac4d78bb638ad5ca921be04bcaf644078
       file_format    = " | sed 1,2d | xargs -n3 | column -t > "
 
       ansible_cmd    = f"{ansible_prefix}'{process}{file_format}{file_name}'"
@@ -133,7 +172,11 @@ def pre_post_file_collect(task):
       else:
          ansible_cmd = f"{ansible_prefix}'{process} > {file_name}'{access}"
 
+<<<<<<< HEAD
 >>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
+=======
+>>>>>>> 935a67522e9b6e2af2571c3d8afd036ae5e38838
+>>>>>>> 8219e8fac4d78bb638ad5ca921be04bcaf644078
       print (f"\n*ENGINEERING MODE* INFO - Checking for {file_name} Data on Client Node\n")
       cmd = f"ssh {remote_access} ls | grep {file_name}"
       find_file, err, rc = sub_proc_exec(cmd, shell=True)
@@ -141,6 +184,9 @@ def pre_post_file_collect(task):
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 8219e8fac4d78bb638ad5ca921be04bcaf644078
       #code.interact(banner='Debug', local=dict(globals(), **locals())) 
 
       if find_file_formatted == f'{file_name}':
@@ -159,9 +205,13 @@ def pre_post_file_collect(task):
       else:
          print (f"\n*ENGINEERING MODE* INFO - Creating {file_name} data on client node\n")
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> e3717c2bda98c627b635b780979190445ee6586a
 =======
 >>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
+=======
+>>>>>>> 935a67522e9b6e2af2571c3d8afd036ae5e38838
+>>>>>>> 8219e8fac4d78bb638ad5ca921be04bcaf644078
          sub_proc_display(ansible_cmd, shell=True)
       menu = True
       while menu == True:
@@ -169,6 +219,9 @@ def pre_post_file_collect(task):
          if my_file.is_file():
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 8219e8fac4d78bb638ad5ca921be04bcaf644078
             print("\n*ENGINEERING MODE* INFO - A Copy of the Data Exists locally!")
             override = input("\nAction Required: " 
                              "\n1) Override Data" 
@@ -329,7 +382,11 @@ def pre_post_file_collect(task):
                        "create --name dlipy3_test --yes pip python=3.6'"
 <<<<<<< HEAD
                        " --become --ask-become-pas",
+<<<<<<< HEAD
 >>>>>>> e3717c2bda98c627b635b780979190445ee6586a
+=======
+>>>>>>> 935a67522e9b6e2af2571c3d8afd036ae5e38838
+>>>>>>> 8219e8fac4d78bb638ad5ca921be04bcaf644078
 =======
                        f"{access}",
 >>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
@@ -339,6 +396,7 @@ def pre_post_file_collect(task):
       file_collecter(file_name='dlipy3_pip_pre_install.txt',
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                      process='source /opt/anaconda3/bin/activate dlipy3_test;'
 =======
                      process='source /opt/anaconda3/bin/activate dlipy3_test && '
@@ -346,12 +404,21 @@ def pre_post_file_collect(task):
 =======
                      process='source /opt/anaconda3/bin/activate dlipy3_test && '
 >>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
+=======
+                     process='source /opt/anaconda3/bin/activate dlipy3_test;'
+=======
+                     process='source /opt/anaconda3/bin/activate dlipy3_test && '
+>>>>>>> 935a67522e9b6e2af2571c3d8afd036ae5e38838
+>>>>>>> 8219e8fac4d78bb638ad5ca921be04bcaf644078
                              '/opt/anaconda3/envs/dlipy3_test/bin/pip list')
 
       # Activate dlipy3_test env and gather pre conda_list
       file_collecter(file_name='dlipy3_conda_pre_install.txt',
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 8219e8fac4d78bb638ad5ca921be04bcaf644078
                      process='source /opt/anaconda3/bin/activate dlipy3_test;'
                              'conda list')
 
@@ -428,11 +495,16 @@ def pre_post_file_collect(task):
                              'conda list --explicit')
 
    elif (task == 'configure_spectrum_conductor.yml'):
+<<<<<<< HEAD
 >>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
+=======
+>>>>>>> 935a67522e9b6e2af2571c3d8afd036ae5e38838
+>>>>>>> 8219e8fac4d78bb638ad5ca921be04bcaf644078
 
 										#post_dlipy3
       # Activate dlipy3 and gather post pip_list
       file_collecter(file_name='dlipy3_pip_post_install.txt',
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
                      process='source /opt/anaconda3/bin/activate dlipy3; '
@@ -442,12 +514,21 @@ def pre_post_file_collect(task):
 =======
                      process='source /opt/anaconda3/bin/activate dlipy3 && '
 >>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
+=======
+                     process='source /opt/anaconda3/bin/activate dlipy3; '
+=======
+                     process='source /opt/anaconda3/bin/activate dlipy3 && '
+>>>>>>> 935a67522e9b6e2af2571c3d8afd036ae5e38838
+>>>>>>> 8219e8fac4d78bb638ad5ca921be04bcaf644078
                              '/opt/anaconda3/envs/dlipy3/bin/pip list')
 
       # Activate dlipy3 env and gather post conda_list
       file_collecter(file_name='dlipy3_conda_post_install.txt',
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 8219e8fac4d78bb638ad5ca921be04bcaf644078
                      process='source /opt/anaconda3/bin/activate dlipy3; '
                              'conda list')
 
@@ -500,7 +581,11 @@ def pre_post_file_collect(task):
                      process='source /opt/anaconda3/bin/activate dlinsights && '
 <<<<<<< HEAD
                              'conda list')
+<<<<<<< HEAD
 >>>>>>> e3717c2bda98c627b635b780979190445ee6586a
+=======
+>>>>>>> 935a67522e9b6e2af2571c3d8afd036ae5e38838
+>>>>>>> 8219e8fac4d78bb638ad5ca921be04bcaf644078
 =======
                              'conda list --explicit')
 >>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
@@ -510,6 +595,7 @@ def pre_post_file_collect(task):
       # Gather post yum list from client
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       file_collecter(file_name='yum_post_list.txt',
 =======
       file_collecter(file_name='client_yum_post_install.txt',
@@ -517,6 +603,12 @@ def pre_post_file_collect(task):
 =======
       file_collecter(file_name='client_yum_post_install.txt',
 >>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
+=======
+      file_collecter(file_name='yum_post_list.txt',
+=======
+      file_collecter(file_name='client_yum_post_install.txt',
+>>>>>>> 935a67522e9b6e2af2571c3d8afd036ae5e38838
+>>>>>>> 8219e8fac4d78bb638ad5ca921be04bcaf644078
                      process='yum list installed')
 
       # Gather post pip_list from client
