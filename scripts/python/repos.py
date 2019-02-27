@@ -19,6 +19,7 @@ from __future__ import nested_scopes, generators, division, absolute_import, \
     with_statement, print_function, unicode_literals
 
 import argparse
+import json
 import glob
 import os
 import re
@@ -154,38 +155,46 @@ def get_name_dir(name):
 
 
 def powerup_file_from_disk(name, file_glob):
-        log = logger.getlogger()
-        name_src = get_name_dir(name)
-        dest_path = None
-        src_path = get_src_path(file_glob)
-        if src_path:
-            if not os.path.exists(f'/srv/{name_src}'):
-                os.mkdir(f'/srv/{name_src}')
-            try:
-                copy2(src_path, f'/srv/{name_src}/')
-            except Error as err:
-                log.debug(f'Failed copying {name} source file to /srv/{name_src}/ '
-                          f'directory. \n{err}')
-            else:
-                log.info(f'Successfully installed {name} source file '
-                         'into the POWER-Up software server.')
-                dest_path = os.path.join(f'/srv/{name_src}/',
-                                         os.path.basename(src_path))
-        return src_path, dest_path
+    log = logger.getlogger()
+    name_src = get_name_dir(name)
+    dest_path = None
+    src_path = get_src_path(file_glob)
+    if src_path:
+        if not os.path.exists(f'/srv/{name_src}'):
+            os.mkdir(f'/srv/{name_src}')
+        try:
+            copy2(src_path, f'/srv/{name_src}/')
+        except Error as err:
+            log.debug(f'Failed copying {name} source file to /srv/{name_src}/ '
+                      f'directory. \n{err}')
+        else:
+            log.info(f'Successfully installed {name} source file '
+                     'into the POWER-Up software server.')
+            dest_path = os.path.join(f'/srv/{name_src}/',
+                                     os.path.basename(src_path))
+    return src_path, dest_path
 
 
 class PowerupRepo(object):
     """Base class for creating a yum repository for access by POWER-Up software
      clients.
     """
-    def __init__(self, repo_id, repo_name, arch='ppc64le', rhel_ver='7'):
+    def __init__(self, repo_id, repo_name, arch='ppc64le', proc_family='family',
+                 rhel_ver='7'):
         self.repo_id = repo_id
         self.repo_name = repo_name
         self.arch = arch
+        self.proc_family = proc_family
         self.repo_type = 'yum'
         self.rhel_ver = str(rhel_ver)
         self.repo_base_dir = '/srv'
-        self.repo_dir = f'/srv/repos/{self.repo_id}/rhel{self.rhel_ver}/{self.repo_id}'
+        if self.repo_id in ('dependencies', 'rhel-common', 'rhel-optional',
+                            'rhel-supplemental', 'rhel-extras'):
+            self.repo_dir = (f'/srv/repos/{self.repo_id}/rhel{self.rhel_ver}/'
+                             f'{self.proc_family}/{self.repo_id}')
+        else:
+            self.repo_dir = (f'/srv/repos/{self.repo_id}/rhel{self.rhel_ver}/'
+                             f'{self.repo_id}')
         self.anarepo_dir = f'/srv/repos/{self.repo_id}'
         self.pypirepo_dir = f'/srv/repos/{self.repo_id}'
         self.log = logger.getlogger()
@@ -368,25 +377,33 @@ class PowerupRepoFromRpm(PowerupRepo):
     """Sets up a yum repository for access by POWER-Up software clients.
     The repo is created from an rpm file selected interactively by the user.
     """
-    def __init__(self, repo_id, repo_name, arch='ppc64le', rhel_ver='7'):
-        super(PowerupRepoFromRpm, self).__init__(repo_id, repo_name, arch, rhel_ver)
+    def __init__(self, repo_id, repo_name, arch='ppc64le', proc_family='family',
+                 rhel_ver='7'):
+        super(PowerupRepoFromRpm, self).__init__(repo_id, repo_name, arch,
+                                                 proc_family, rhel_ver)
 
     def get_rpm_path(self, filepath='/home/**/*.rpm'):
         """Interactive search for the rpm path.
         Returns: Path to file or None
         """
-        while True:
+        continu = True
+        while continu:
             self.rpm_path = get_file_path(filepath)
+            if '.rpm' not in self.rpm_path:
+                r = get_yesno('Continue searching')
+                if not r:
+                    continu = False
             # Check for .rpm files in the chosen file
-            cmd = 'rpm -qlp self.rpm_path'
+            cmd = f'rpm -qlp {self.rpm_path}'
             resp, err, rc = sub_proc_exec(cmd)
-            if self.rpm_path:
-                if '.rpm' not in resp:
-                    print('There are no ".rpm" files in the selected path')
-                    if get_yesno('Use selected path? ', default='n'):
-                        return self.rpm_path
+            if rc != 0:
+                print('An error occured while querying the selcted rpm file')
+                return
             else:
-                return None
+                if '.rpm' not in resp:
+                    print('There are no ".rpm" files in the selected file')
+                else:
+                    return self.rpm_path
 
     def copy_rpm(self, src_path):
         """copy the selected rpm file (self.rpm_path) to the /srv/{self.repo_id}
@@ -413,6 +430,8 @@ class PowerupRepoFromRpm(PowerupRepo):
         extract_dir = self.repo_dir
         if not os.path.exists(extract_dir):
             os.makedirs(extract_dir)
+
+        # Move to the target directory
         os.chdir(extract_dir)
         cmd = f'rpm2cpio {src_path} | sudo cpio -div'
         resp, err, rc = sub_proc_exec(cmd, shell=True)
@@ -433,8 +452,10 @@ class PowerupYumRepoFromRepo(PowerupRepo):
     URL which could reside on another host or from a local directory. (ie
     a file based URL pointing to a mounted disk. eg file:///mnt/my-mounted-usb)
     """
-    def __init__(self, repo_id, repo_name, arch='ppc64le', rhel_ver='7'):
-        super(PowerupYumRepoFromRepo, self).__init__(repo_id, repo_name, arch, rhel_ver)
+    def __init__(self, repo_id, repo_name, arch='ppc64le', proc_family='family',
+                 rhel_ver='7'):
+        super(PowerupYumRepoFromRepo, self).__init__(repo_id, repo_name, proc_family,
+                                                     arch, rhel_ver)
 
     def sync(self):
         self.log.info(f'Syncing {self.repo_name}')
@@ -466,8 +487,74 @@ class PowerupAnaRepoFromRepo(PowerupRepo):
         super(PowerupAnaRepoFromRepo, self).__init__(repo_id, repo_name, arch, rhel_ver)
         self.repo_type = 'ana'
 
-    def sync_ana(self, url, rejlist='', acclist=''):
+    def get_pkg_list(self, path):
+        """ Looks for the repodata.json file. If present, it is loaded and the
+        package list is extracted and returned
+        Args:
+            path (str): url to the repodata
+        Returns:
+            list of packages. Full names, no path.
+        """
+        if os.path.isfile(path):
+            with open(path, 'r') as f:
+                repodata = f.read()
+        else:
+            return
+
+        repodata = json.loads(repodata)
+        pkgs = repodata['packages'].keys()
+        return pkgs
+
+    def _update_repodata(self, path):
+        """ Update the repodata.json file to reflect the actual contents of the
+        repodata directory.
+            Args:
+        path: (str) full path to the repodata directory.
+        """
+        status = True
+        path = os.path.join(path, 'repodata.json')
+        exists = glob.glob(path, recursive=True)
+        if exists:
+            repodata_path = exists[0]
+            dir_name = os.path.dirname(repodata_path)
+            file_list = glob.glob(os.path.join(dir_name, '*'))
+            file_list = [f.rsplit('/', 1)[1] for f in file_list]
+        else:
+            self.log.error(f'Unable to find repodata for {self.repo_name}')
+
+        with open(path, 'r') as f:
+            repodata = f.read()
+
+        repodata = json.loads(repodata)
+        pkgs = {pkg: repodata['packages'][pkg] for pkg in
+                repodata['packages'] if pkg in file_list}
+
+        # Build the new dict from the original. Replace the value of the 'packages'
+        # key in the new dict
+        new_repodata = {}
+        for item in repodata.keys():
+            if item == 'packages':
+                new_repodata[item] = pkgs
+            else:
+                new_repodata[item] = repodata[item]
+
+        # write (replace) the repodata file
+        with open(path, 'w') as f:
+            json.dump(new_repodata, f, indent=2)
+
+        return status
+
+    def sync_ana(self, url, rejlist=None, acclist=None):
         """Syncs an Anaconda repository using wget or rsync.
+        To download the entire repository, leave the accept list (acclist) and rejlist
+        empty. Alternately, set the acclist to all or the rejlist to all to accept or
+        reject the entire repo. Note that the accept list and reject list are mutually
+        exclusive.
+        inputs:
+            acclist (str): Accept list. List of files to download. If specified,
+                only the listed files will be downloaded.
+            rejlist (str): Reject list. List of files to reject. If specified,
+                the entire repository except the files in the rejlist will be downloaded.
         """
         def _get_table_row(file_handle):
             """read lines from file handle until end of table row </tr> found
@@ -490,32 +577,55 @@ class PowerupAnaRepoFromRepo(PowerupRepo):
                 dest_dir = f'/srv/repos/{self.repo_id}' + url[url.find('/pkgs/'):]
             elif '/conda-forge' in url:
                 dest_dir = f'/srv/repos/{self.repo_id}' + url[url.find('/conda-forge'):]
+            elif self.repo_id == 'ibmai':
+                dest_dir = os.path.join(f'/srv/repos/{self.repo_id}',
+                                        url.rsplit('/', 2)[1])
             self.log.info(f'Syncing {self.repo_name}')
-            self.log.info('This can take many minutes or hours for large repositories\n')
+            self.log.info('This can take several minutes\n')
 
-            if acclist:
-                ctrl = '--accept'
-                _list = acclist
-                if 'index.html' not in _list and '/conda-forge' not in url:
-                    _list += ',index.html'
-                if 'repodata.json' not in _list:
-                    _list += ',repodata.json'
-                if 'repodata.json.bz2' not in _list:
-                    _list += ',repodata.json.bz2'
-            else:
-                ctrl = '--reject'
-                _list = rejlist
+            # Get the repodata.json files and html index files
+            # -S = preserve time stamp.  -N = only if Newer or missing -P = download path
+            for file in ('repodata.json', 'repodata2.json', 'repodata.json.bz2',
+                         'index.html'):
+                cmd = (f'wget -N -S -P {dest_dir} {url}{file}')
+                res, err, rc = sub_proc_exec(cmd, shell=True)
+                if rc != 0 and file == 'repodata.json':
+                    self.log.error(f'Error downloading {file}.  rc: {rc}')
+                err = err.splitlines()
+                for line in err:
+                    if '-- not retrieving' in line:
+                        print(line, '\n')
 
-            # remove directory path components up to '/pkgs'
-            if '/pkgs' in url:
-                cd_cnt = url[3 + url.find('://'):url.find('/pkgs')].count('/')
-            elif '/conda-forge' in url:
-                cd_cnt = url[3 + url.find('://'):url.find('/conda-forge')].count('/')
-            cmd = (f"wget -m -nH --cut-dirs={cd_cnt} {ctrl} '{_list}' "
-                   f"-P /srv/repos/{self.repo_id} {url}")
-            rc = sub_proc_display(cmd, shell=True)
-            if rc != 0:
-                self.log.error(f'Error downloading {url}.  rc: {rc}')
+            # Get the list of packages in the repo. Note that if both acclist
+            # and rejlist are not provided the full set of packages is downloaded
+            pkgs = self.get_pkg_list(os.path.join(dest_dir, 'repodata.json'))
+            download_set = set(pkgs)
+
+            if acclist and acclist != 'all':
+                download_set = download_set & set(acclist)
+                missing = set(acclist) - download_set
+                if missing:
+                    self.log.warning('The following packages are not present at \n'
+                                     f'{url}\n{missing}')
+            elif rejlist:
+                if rejlist == 'all':
+                    download_set = ()
+                else:
+                    download_set = download_set - set(rejlist)
+
+            # Get em
+            for file in sorted(download_set):
+                print(file)
+                cmd = (f'wget -N -S -P {dest_dir} {url}{file}')
+                res, err, rc = sub_proc_exec(cmd, shell=True)
+                if rc != 0:
+                    self.log.error(f'Error downloading {url}.  rc: {rc}')
+                err = err.splitlines()
+                for line in err:
+                    if '-- not retrieving' in line:
+                        print(line, '\n')
+            self._update_repodata(dest_dir)
+
         elif 'file:///' in url:
             src_dir = url[7:]
             if '/pkgs/' in url:
@@ -533,8 +643,10 @@ class PowerupAnaRepoFromRepo(PowerupRepo):
             else:
                 self.log.info(f'{self.repo_name} sync finished successfully')
 
+        self._update_repodata(dest_dir)
+
         # Filter content of index.html
-        if '/conda-forge' not in dest_dir:
+        if '/pkgs' in dest_dir:
             filelist = os.listdir(dest_dir)
             filecnt = 0
             dest = dest_dir + 'index.html'
@@ -654,8 +766,10 @@ class PowerupPypiRepoFromRepo(PowerupRepo):
 
 
 class PowerupRepoFromDir(PowerupRepo):
-    def __init__(self, repo_id, repo_name, arch='ppc64le', rhel_ver='7'):
-        super(PowerupRepoFromDir, self).__init__(repo_id, repo_name, arch, rhel_ver)
+    def __init__(self, repo_id, repo_name, arch='ppc64le', proc_family='family',
+                 rhel_ver='7'):
+        super(PowerupRepoFromDir, self).__init__(repo_id, repo_name, arch,
+                                                 proc_family, rhel_ver)
 
     def copy_dirs(self, src_dir=None):
         if os.path.exists(self.repo_dir):

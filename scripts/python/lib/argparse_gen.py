@@ -85,6 +85,12 @@ def get_args(parser_args=False):
         help='Add log to stdout/stderr\nChoices: {}\nDefault: {}'.format(
             ','.join(LOG_LEVEL_CHOICES), LOG_LEVEL_PRINT[0]))
 
+    common_parser.add_argument(
+        '--extra-vars',
+        nargs=1,
+        metavar='EXTRA-VARS',
+        help='Provide extra variables to PowerUp')
+
     # Subparsers
     parser_setup = subparsers.add_parser(
         SETUP_CMD,
@@ -395,6 +401,12 @@ def get_args(parser_args=False):
         action='store_true',
         help='Run all software prep and install steps')
 
+    parser_software.add_argument(
+        '--arch',
+        default="ppc64le",
+        choices=['ppc64le', 'x86_64'],
+        help='Runs the software phase with specified architecture')
+
     # 'utils' subcommand arguments
     parser_utils.set_defaults(utils=True)
 
@@ -473,11 +485,13 @@ def _check_post_deploy(args, subparser):
             'one of the arguments --ssh-keyscan --gather-mac-addr'
             '--config-client-os -a/--all is required')
 
+
 def _check_osinstall(args, subparser):
     if not (args.networks or args.gateway):
         subparser.error('one of the arguments --setup-interfaces --gateway '
                         'is required. Optionally a profile file name may be '
                         'included')
+
 
 def _check_software(args, subparser):
     if not args.prep and not args.install and not args.name and not args.README \

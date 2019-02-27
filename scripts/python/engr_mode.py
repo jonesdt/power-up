@@ -22,6 +22,7 @@ import sys
 import re
 import subprocess
 <<<<<<< HEAD
+<<<<<<< HEAD
 import code 
 =======
 import code
@@ -30,26 +31,49 @@ import getpass
 
 import lib.logger as logger
 from lib.genesis import GEN_PATH, GEN_SOFTWARE_PATH, get_ansible_playbook_path, get_playbooks_path, get_logs_path
+=======
+import code
+import getpass
+
+import lib.logger as logger
+from lib.genesis import GEN_PATH, GEN_SOFTWARE_PATH, get_ansible_playbook_path, get_playbooks_path, get_dependencies_path
+>>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
 from lib.utilities import sub_proc_display, sub_proc_exec, heading1, Color, \
     get_selection, get_yesno, rlinput, bold, ansible_pprint, replace_regex
 from pathlib import Path
 
+<<<<<<< HEAD
 def dependency_folder_collector():
    #sub_proc_display("ansible-fetch copy_text_files_from_client.yml",
    #                 shell=True)
    dependencies_path = get_logs_path() +'/dependencies'
    if not os.path.exists('{}'.format(dependencies_path)):
           os.makedirs('{}'.format(dependencies_path))
+=======
+DEPENDENCIES_PATH = get_dependencies_path()
+
+def dependency_folder_collector():
+   #sub_proc_display("ansible-fetch copy_text_files_from_client.yml",
+   #                 shell=True)
+   if not os.path.exists('{}'.format(DEPENDENCIES_PATH)):
+          os.makedirs('{}'.format(DEPENDENCIES_PATH))
+>>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
 
 										   #client
 def pre_post_file_collect(task):
 
+<<<<<<< HEAD
+=======
+   access = ' --become --ask-become-pas'
+
+>>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
    def file_collecter(file_name,process):
 
       #current_user    = input("Enter current user: ")
       #client_user     = input("Enter client user: ")
       #client_hostname = input("Enter client hostname or IP: ")
 
+<<<<<<< HEAD
 <<<<<<< HEAD
       current_user    = 'jonest' 
       client_user     = 'paieuser'
@@ -61,21 +85,35 @@ def pre_post_file_collect(task):
 
       print (f"\n*ENGINEERING MODE* INFO - Current user: {current_user}\n")
 >>>>>>> e3717c2bda98c627b635b780979190445ee6586a
+=======
+      current_user    = 'ray'
+      client_user     = 'paieuser'
+      client_hostname = 'server-1'
+
+      print (f"\n*ENGINEERING MODE* INFO - Current user: {current_user}\n")
+>>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
 
       remote_access   = f"{client_user}@{client_hostname}"
       remote_location = f"/home/{client_user}/"
       dbfile          = f"{file_name}"
+<<<<<<< HEAD
       local_dir       = f"/home/{current_user}/power-up/logs/dependencies/"
+=======
+      local_dir       = DEPENDENCIES_PATH
+>>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
 
       data_copy_cmd  = f'scp -r {remote_access}:{remote_location}{dbfile} {local_dir}'
 
       ansible_prefix = f'ansible all -i {host_path} -m shell -a '
+<<<<<<< HEAD
 <<<<<<< HEAD
       file_format    = " | sed 1,2d | xargs -n3 | column -t > "
 
       ansible_cmd    = f"{ansible_prefix}'{process}{file_format}{file_name}'"
      
 =======
+=======
+>>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
       yum_file_format    = " | sed 1,2d | xargs -n3 | column -t > "
       conda_file_format = " | sed 1,3d >"
       function = dbfile.split('_',4)[1]
@@ -84,16 +122,24 @@ def pre_post_file_collect(task):
          ansible_cmd = f"{ansible_prefix}'{process}{yum_file_format}{file_name}'"
       elif (function == 'conda'):
           ansible_cmd = (f"{ansible_prefix}'{process}{conda_file_format}{file_name}'"
+<<<<<<< HEAD
                          " --become --ask-become-pas")
       else:
          ansible_cmd = f"{ansible_prefix}'{process} > {file_name}' --become --ask-become-pas"
 
 >>>>>>> e3717c2bda98c627b635b780979190445ee6586a
+=======
+                         f"{access}")
+      else:
+         ansible_cmd = f"{ansible_prefix}'{process} > {file_name}'{access}"
+
+>>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
       print (f"\n*ENGINEERING MODE* INFO - Checking for {file_name} Data on Client Node\n")
       cmd = f"ssh {remote_access} ls | grep {file_name}"
       find_file, err, rc = sub_proc_exec(cmd, shell=True)
       find_file_formatted = find_file.rstrip("\n\r")
 
+<<<<<<< HEAD
 <<<<<<< HEAD
       #code.interact(banner='Debug', local=dict(globals(), **locals())) 
 
@@ -103,6 +149,8 @@ def pre_post_file_collect(task):
       else:
          print (f"\n*ENGINEERING MODE* INFO - Creating {file_name} Data on Client Node")
 =======
+=======
+>>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
       #code.interact(banner='Debug', local=dict(globals(), **locals()))
 
       if find_file_formatted == f'{file_name}':
@@ -110,12 +158,16 @@ def pre_post_file_collect(task):
          pass
       else:
          print (f"\n*ENGINEERING MODE* INFO - Creating {file_name} data on client node\n")
+<<<<<<< HEAD
 >>>>>>> e3717c2bda98c627b635b780979190445ee6586a
+=======
+>>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
          sub_proc_display(ansible_cmd, shell=True)
       menu = True
       while menu == True:
          my_file = Path(f'{local_dir}{dbfile}')
          if my_file.is_file():
+<<<<<<< HEAD
 <<<<<<< HEAD
             print("\n*ENGINEERING MODE* INFO - A Copy of the Data Exists locally!")
             override = input("\nAction Required: " 
@@ -143,6 +195,8 @@ def pre_post_file_collect(task):
          else:
             print (f"\n*ENGINEERING MODE* INFO - Copying {file_name} to Deployer\n")
 =======
+=======
+>>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
             print("\n*ENGINEERING MODE* INFO - A copy of the data exists locally!")
             override = input("\nAction Required: "
                              "\n1) Override Data"
@@ -173,6 +227,7 @@ def pre_post_file_collect(task):
                print ("Please make a valid choice")
          else:
             print (f"\n*ENGINEERING MODE* INFO - Copying {file_name} to deployer\n")
+<<<<<<< HEAD
 >>>>>>> e3717c2bda98c627b635b780979190445ee6586a
             sub_proc_display(f'{data_copy_cmd}', shell=True)
             menu = False
@@ -205,13 +260,65 @@ def pre_post_file_collect(task):
                  ]
 
    if (task in tasks_list):
+=======
+            sub_proc_display(f'{data_copy_cmd}', shell=True)
+            menu = False
+
+                                        #Clean cache
+
+   def conda_clean_cache():
+      conda_cache = "/opt/anaconda3/conda-bld/"
+      conda_cache_dir = ['src_cache','git_cache','hg_cache','svn_cache']
+      ansible_prefix = f'ansible all -i {host_path} -m shell -a '
+      print("\n*ENGINEERING MODE* INFO - Checking for conda cache")
+      try:
+         for cache_dir in conda_cache_dir:
+            sub_proc_display(f"{ansible_prefix} 'ls {conda_cache}{cache_dir}'",
+                             shell=True)
+         sub_proc_display(f"{ansible_prefix} 'conda clean --all'{access}", shell=True)
+      except FolderNotFoundError as exc:
+            print ("\nINFO Cache directories do not exist\n")
+
+   def yum_clean_cache():
+      yum_cache_dir = '/var/cache/yum'
+      print("\n*ENGINEERING MODE* INFO - Checking for yum cache")
+      try:
+         sub_proc_display(f"{ansible_prefix} 'ls {yum_cache_dir}'",
+                          shell=True)
+         yum_clean = sub_proc_display(f"ansible all -i {host_path} -m shell -a '"
+                                   f"yum clean'{access}", shell=True)
+      except FolderNotFoundError as exc:
+         print ("\nINFO Cache directories do not exist\n")
+
+
+                                        #Start
+
+
+   host_path = get_playbooks_path() +'/software_hosts'
+   tasks_list = [
+                 'yum_update_cache.yml'
+                 ]
+
+   if (task in tasks_list):
+
+      yum_clean_cache()
+
+>>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
       file_collecter(file_name="client_yum_pre_install.txt",
                      process="yum list installed")
 
       file_collecter(file_name="client_pip_pre_install.txt",  #N/A x86 Andaconda/7.6
                      process="touch client_pip_pre_install.txt")
 
+<<<<<<< HEAD
    elif (task == 'install_frameworks.yml'):
+=======
+   elif (task == 'complete_system_setup.yml'):
+
+                                        # Clean Cache
+
+      conda_clean_cache()
+>>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
 
 										#dlipy3_env
       # Create dlipy3 test environment
@@ -220,21 +327,30 @@ def pre_post_file_collect(task):
       sub_proc_display(f"ansible all -i {host_path} -m shell -a "
                        "'/opt/anaconda3/bin/conda "
                        "create --name dlipy3_test --yes pip python=3.6'"
+<<<<<<< HEAD
                        " --become --ask-become-pas",
 >>>>>>> e3717c2bda98c627b635b780979190445ee6586a
+=======
+                       f"{access}",
+>>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
                        shell=True)
 
       # Activate dlipy3_test and gather pre pip_list
       file_collecter(file_name='dlipy3_pip_pre_install.txt',
 <<<<<<< HEAD
+<<<<<<< HEAD
                      process='source /opt/anaconda3/bin/activate dlipy3_test;'
 =======
                      process='source /opt/anaconda3/bin/activate dlipy3_test && '
 >>>>>>> e3717c2bda98c627b635b780979190445ee6586a
+=======
+                     process='source /opt/anaconda3/bin/activate dlipy3_test && '
+>>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
                              '/opt/anaconda3/envs/dlipy3_test/bin/pip list')
 
       # Activate dlipy3_test env and gather pre conda_list
       file_collecter(file_name='dlipy3_conda_pre_install.txt',
+<<<<<<< HEAD
 <<<<<<< HEAD
                      process='source /opt/anaconda3/bin/activate dlipy3_test;'
                              'conda list')
@@ -261,6 +377,10 @@ def pre_post_file_collect(task):
 =======
                      process='source /opt/anaconda3/bin/activate dlipy3_test && '
                              'conda list')
+=======
+                     process='source /opt/anaconda3/bin/activate dlipy3_test && '
+                             'conda list --explicit')
+>>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
 
 										#dlipy2_env
       # Create dlipy2_test environment
@@ -268,7 +388,11 @@ def pre_post_file_collect(task):
       sub_proc_display(f"ansible all -i {host_path} -m shell -a "
                        "'/opt/anaconda3/bin/conda "
                        "create --name dlipy2_test --yes pip python=2.7'"
+<<<<<<< HEAD
                        " --become --ask-become-pas",
+=======
+                       f"{access}",
+>>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
                        shell=True)
 
       # Activate dlipy2_test env and gather pre pip_list
@@ -279,7 +403,11 @@ def pre_post_file_collect(task):
       # Activate dlipy2_test env and gather pre conda_list
       file_collecter(file_name='dlipy2_conda_pre_install.txt',
                      process='source /opt/anaconda3/bin/activate dlipy2_test && '
+<<<<<<< HEAD
                              'conda list')
+=======
+                             'conda list --explicit')
+>>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
 
                                         #dlinsights_env
 
@@ -291,23 +419,34 @@ def pre_post_file_collect(task):
       # Activate dlinsights env and gather pre conda_list
       file_collecter(file_name='dlinsights_conda_pre_install.txt',
                      process='source /opt/anaconda3/bin/activate dlipy2_test && '
+<<<<<<< HEAD
                              'conda list')
 
    elif (task == 'configure_spectrum_conductor.yml'):
 >>>>>>> e3717c2bda98c627b635b780979190445ee6586a
+=======
+                             'conda list --explicit')
+
+   elif (task == 'configure_spectrum_conductor.yml'):
+>>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
 
 										#post_dlipy3
       # Activate dlipy3 and gather post pip_list
       file_collecter(file_name='dlipy3_pip_post_install.txt',
 <<<<<<< HEAD
+<<<<<<< HEAD
                      process='source /opt/anaconda3/bin/activate dlipy3; '
 =======
                      process='source /opt/anaconda3/bin/activate dlipy3 && '
 >>>>>>> e3717c2bda98c627b635b780979190445ee6586a
+=======
+                     process='source /opt/anaconda3/bin/activate dlipy3 && '
+>>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
                              '/opt/anaconda3/envs/dlipy3/bin/pip list')
 
       # Activate dlipy3 env and gather post conda_list
       file_collecter(file_name='dlipy3_conda_post_install.txt',
+<<<<<<< HEAD
 <<<<<<< HEAD
                      process='source /opt/anaconda3/bin/activate dlipy3; '
                              'conda list')
@@ -330,6 +469,10 @@ def pre_post_file_collect(task):
 =======
                      process='source /opt/anaconda3/bin/activate dlipy3 && '
                              'conda list')
+=======
+                     process='source /opt/anaconda3/bin/activate dlipy3 && '
+                             'conda list --explicit')
+>>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
 
 										#post_dlipy2
       # Activate dlipy2 and gather post pip_list
@@ -340,7 +483,11 @@ def pre_post_file_collect(task):
       # Activate dlipy2 and gather post conda_list
       file_collecter(file_name='dlipy2_conda_post_install.txt',
                      process='source /opt/anaconda3/bin/activate dlipy2 && '
+<<<<<<< HEAD
                              'conda list')
+=======
+                             'conda list --explicit')
+>>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
 
                                        #post_dlinsights
       # Activate dlinsights and gather post pip_list
@@ -351,17 +498,25 @@ def pre_post_file_collect(task):
       # Activate dlinsights env and gather post conda_list
       file_collecter(file_name='dlinsights_conda_post_install.txt',
                      process='source /opt/anaconda3/bin/activate dlinsights && '
+<<<<<<< HEAD
                              'conda list')
 >>>>>>> e3717c2bda98c627b635b780979190445ee6586a
+=======
+                             'conda list --explicit')
+>>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
 
    elif (task=='powerai_tuning.yml'):
 
       # Gather post yum list from client
 <<<<<<< HEAD
+<<<<<<< HEAD
       file_collecter(file_name='yum_post_list.txt',
 =======
       file_collecter(file_name='client_yum_post_install.txt',
 >>>>>>> e3717c2bda98c627b635b780979190445ee6586a
+=======
+      file_collecter(file_name='client_yum_post_install.txt',
+>>>>>>> ec6af227522803bbab92230c4a9d19414c7f068c
                      process='yum list installed')
 
       # Gather post pip_list from client

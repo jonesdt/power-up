@@ -23,14 +23,19 @@ import fileinput
 import readline
 from shutil import copy2
 from subprocess import Popen, PIPE
-from netaddr import IPNetwork, IPAddress
+from netaddr import IPNetwork, IPAddress, IPSet
 from tabulate import tabulate
 
 from lib.config import Config
 import lib.logger as logger
 
 PATTERN_DHCP = r"^\|_*\s+(.+):(.+)"
-PATTERN_MAC = r'[\da-fA-F]{2}:){5}[\da-fA-F]{2}'
+PATTERN_MAC = r'([\da-fA-F]{2}:){5}[\da-fA-F]{2}'
+PATTERN_IP = (r'^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}'
+              r'(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$')
+PATTERN_EMBEDDED_IP = (r'(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}'
+                       r'(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)')
+
 CalledProcessError = subprocess.CalledProcessError
 
 LOG = logger.getlogger()
@@ -102,13 +107,34 @@ def has_dhcp_servers(interface):
     return False
 
 
+def scan_subnet(cidr):
+    cmd = f'sudo nmap -sn {cidr}'
+    res, err, rc = sub_proc_exec(cmd)
+    items = []
+    if rc != 0:
+        LOG.error(f'Error while scanning subnet {cidr}, rc: {rc}')
+    for line in res.split('Nmap scan report'):
+        match = re.search(PATTERN_EMBEDDED_IP, line)
+        if match:
+            ip = match.group(0)
+            match2 = re.search(PATTERN_MAC, line)
+            if match2:
+                mac = match2.group(0)
+            else:
+                mac = ''
+            items += [(ip, mac)]
+    return items
+
+
 def is_ipaddr(ip):
-    if re.search(r'\A(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}'
-                 '(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\Z', ip):
+    if re.search(PATTERN_IP, ip):
         return True
 
 
 def get_network_addr(ipaddr, prefix):
+    """ Return the base address of the subnet in which the ipaddr / prefix
+        reside.
+    """
     return str(IPNetwork(f'{ipaddr}/{prefix}').network)
 
 
@@ -118,6 +144,38 @@ def get_netmask(prefix):
 
 def get_prefix(netmask):
     return IPAddress(netmask).netmask_bits()
+
+
+def get_network_size(cidr):
+    """ return the decimal size of the cidr address
+    """
+    return IPNetwork(cidr).size
+
+
+def add_offset_to_address(addr, offset):
+    """calculates an address with an offset added. offset can be negative.
+    Args:
+        addr (str): ipv4 or cidr representation of address
+        offset (int): integer offset
+    Returns:
+        addr_.ip (str) address in ipv4 representation
+    """
+    addr_ = IPNetwork(addr)
+    addr_.value += offset
+    return str(addr_.ip)
+
+
+def is_overlapping_addr(subnet1, subnet2):
+    """ Checks if two ipv4 subnets are overlapping
+    Inputs:
+        subnet1,subnet2 (str) ipv4 subnet in cidr format
+    Returns:
+        True if the two subnets overlap, False if they do not.
+    """
+    if IPSet([subnet1]).intersection(IPSet([subnet2])):
+        return True
+    else:
+        return False
 
 
 def bash_cmd(cmd):
@@ -445,6 +503,7 @@ def get_url(url='http://', fileglob='', prompt_name='', repo_chk='', contains=[]
     Output:
         url (str) URL for one file or repository directory
     """
+    from lib.genesis import GEN_SOFTWARE_PATH
     print(f'Enter {prompt_name} URL. ("sss" at end of URL to skip)')
     if fileglob:
         print('Do not include filenames in the URL. A search of the URL')
@@ -454,6 +513,24 @@ def get_url(url='http://', fileglob='', prompt_name='', repo_chk='', contains=[]
         if url.endswith('sss'):
             url = None
             break
+
+        if 'artifactory.swg' in url:
+            fnd_creds = False
+            while not fnd_creds:
+                path = os.path.join(GEN_SOFTWARE_PATH, 'artifactory.credentials')
+                if os.path.isfile(path):
+                    with open(path, 'r') as f:
+                        creds = f.read().rstrip('\n')
+                        fnd_creds = True
+                else:
+                    print('No artifactory credentials file found')
+                    r = get_selection('Retry\nTerminate Sofware install',
+                                      ('R', 'T'))
+                    if r == 'T':
+                        sys.exit('PowerUp software install terminated by user')
+            url = f'https://{creds}{url}'
+            break
+
         if repo_chk:
             url = url if url.endswith('/') else url + '/'
         try:
@@ -591,7 +668,6 @@ def get_dir(src_dir):
         path (str or None) : Selected path
     """
     rows = 10
-    log = logger.getlogger()
     if not src_dir:
         path = os.path.abspath('.')
     else:
@@ -786,7 +862,7 @@ def get_file_path(filename='/home'):
     print('/home/user1/myfile[56].2  Search for myfile5.2 or myfile6.2 under /home/user1/')
     print('/home/user1/*/            List directories under /home/user1')
     print()
-    maxl = 40
+    maxl = 10
     while True:
         print("Enter a file name to search for ('L' to leave without making a selction): ")
         filename = rlinput(bold("File: "), filename)
@@ -798,7 +874,7 @@ def get_file_path(filename='/home'):
             print(bold(f'Found {len(files)} matching'))
             if len(files) > maxl:
                 print(f'\nSearch returned more than {maxl} items. Showing first {maxl}')
-                files = files[:40]
+                files = files[:maxl]
             choices = [str(i + 1) for i in range(len(files))]
             choices.append('S')
             choices.append('L')
