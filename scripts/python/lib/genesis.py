@@ -90,6 +90,9 @@ class Color:
     endc = '\033[0m'
 
 
+def get_dependencies_path():
+    return os.path.join(GEN_PATH, 'logs/dependencies')
+
 def get_switch_lock_path():
     if is_container():
         match = re.search(r'(/\w+)/', CONTAINER_PACKAGE_PATH).group(1)
@@ -192,7 +195,11 @@ def get_scripts_path():
         return get_container_scripts_path()
     return os.path.join(GEN_PATH, SCRIPTS_DIR)
 
+<<<<<<< HEAD
 def get_logs_path():
+=======
+def get_logs_path():   #ENGINEERING MODE#
+>>>>>>> e3717c2bda98c627b635b780979190445ee6586a
     return os.path.join(GEN_LOGS_PATH)
 
 def get_python_path():
