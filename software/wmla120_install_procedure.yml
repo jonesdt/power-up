@@ -1,16 +1,16 @@
 ---
 
-- description: Update yum cache
-  tasks: yum_update_cache.yml
+#- description: Update yum cache
+#  tasks: yum_update_cache.yml
 
 - description: ENGINEERING MODE - Gather initial client package data (yum, pip)
   tasks: engr_mode_client_pre_install_gather.yml
- 
-- description: ENGINEERING MODE - Gather initial environment package data (conda, pip)
-  tasks: engr_mode_env_pre_install_gather.yml
 
-- description: ENGINEERING MODE - Gather initial environment package data (conda, pip)
-  tasks: engr_mode_env_post_install_gather.yml
+#- description: ENGINEERING MODE - Gather initial environment package data (conda, pip)
+#  tasks: engr_mode_env_pre_install_gather.yml
+
+#- description: ENGINEERING MODE - Gather initial environment package data (conda, pip)
+#  tasks: engr_mode_env_post_install_gather.yml
 
 - description: ENGINEERING MODE - Gather initial client package data (yum, pip)
   tasks: engr_mode_client_post_install_gather.yml

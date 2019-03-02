@@ -1,11 +1,11 @@
 ---
-vars:
-  dlipy3_pip: dlipy3_pip_pre_install.txt
-  dlipy3_conda: dlipy3_conda_pre_install.txt
-  dlipy2_pip: dlipy2_pip_pre_install.txt
-  dlipy2_conda: dlipy2_conda_pre_install.txt
-  dliinsights_pip: dlinsights_pip_pre_install.txt 
-  dliinsights_conda: dlinsights_conda_pre_install.txt
+- set_fact:
+    dlipy3_pip: dlipy3_pip_pre_install.txt
+    dlipy3_conda: dlipy3_conda_pre_install.txt
+    dlipy2_pip: dlipy2_pip_pre_install.txt
+    dlipy2_conda: dlipy2_conda_pre_install.txt
+    dliinsights_pip: dlinsights_pip_pre_install.txt
+    dliinsights_conda: dlinsights_conda_pre_install.txt
 
 - name: Set installation directory variable
   set_fact:
@@ -74,7 +74,7 @@ vars:
 - name: Activate dlinsights and gather post python and conda lists
   shell: "source {{ install_dir }}/bin/activate dlinsights_test && {{ item }}"
   loop:
-    - "conda list --explicit > {{vars.dlinsights_pip}}" 
+    - "conda list --explicit > {{vars.dlinsights_pip}}"
     - "conda list --explicit > {{vars.dlinsights_conda}}"
   become: yes
 
