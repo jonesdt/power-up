@@ -12,8 +12,8 @@
     warn: no
   become: yes
 
-- name: Update yum cache
-  command: yum makecache fast
-  args:
-    warn: no
-  become: yes
+#- name: Update yum cache
+#  command: yum makecache fast
+#  args:
+#    warn: no
+#  become: yes

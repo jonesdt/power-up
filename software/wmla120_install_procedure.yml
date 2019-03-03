@@ -3,6 +3,12 @@
 #- description: Update yum cache
 #  tasks: yum_update_cache.yml
 
+- description: ENGINEERING MODE - Clean client yum cache
+  tasks: engr_mode_client_yum_update_cache.yml
+
+- description: ENGINEERING MODE - Clean client conda cache
+  tasks: engr_mode_client_conda_update_cache.yml
+
 - description: ENGINEERING MODE - Gather initial client package data (yum, pip)
   tasks: engr_mode_client_pre_install_gather.yml
 
