@@ -17,7 +17,7 @@
 
 import sys
 import os.path
-# import code
+import code
 import yaml
 
 import lib.logger as logger
@@ -27,7 +27,8 @@ import lib.genesis as gen
 def main():
     log = logger.getlogger()
     log.debug('log this')
-    dep_path = gen.get_dependencies_path()
+    #dep_path = gen.get_dependencies_path()
+    dep_path = '/home/jonest/power-up/logs/dependencies/travis-server/home/rhel75'
 
     pip_pre_files = ['client_pip_pre_install.txt',
                      'dlipy3_pip_pre_install.txt',
@@ -57,22 +58,13 @@ def main():
 
     def file_check(pre_files):
         for f in pre_files:
-            pre_file_path = os.path.join(dep_path, f)
-            my_file = os.path.isfile(pre_file_path)
+            file_path = os.path.join(dep_path, f)
+            my_file = os.path.isfile(file_path)
+            print (file_path)
             if my_file:
                 pass
             else:
-                menu = True
-                while menu:
-                    opt = input(f'INFO - Would you like to recover "{f}" ?\n 1 - Yes \n 2 - No \n')
-                    if opt == '1':
-                        print(f'\nINFO - Located new pre path for "{f}"\n')
-                        menu = False
-                    elif opt == '2':
-                        menu = False
-                        sys.exit()
-                    else:
-                        print('\nPlese select a valid option')
+                input(f'\nINFO - {f} Does not exist\n')
 
     def format_pkg_name(pkg, pkg_type):
         if pkg_type == 'yum':
@@ -229,12 +221,21 @@ def main():
 
         write_merged_files(merged_sets, pkg_type)
 
-    file_check(pip_pre_files)
-    file_check(pip_post_files)
+    file_check(yum_pre_files)
+    file_check(yum_post_files)
     merge_function(yum_pre_files, yum_post_files, 'yum')
-    merge_function(conda_pre_files, conda_post_files, 'conda')
-    merge_function(pip_pre_files, pip_post_files, 'pip')
+#    file_check(conda_pre_files)
+#    file_check(conda_post_files)
+#    merge_function(conda_pre_files, conda_post_files, 'conda')
+#    file_check(pip_pre_files)
+#    file_check(pip_post_files)
+#    merge_function(pip_pre_files, pip_post_files, 'pip')
 
+    def list_merge():
+        file_name = 'package_list_proposed.yml'
+        #yaml.load('package_list_proposed.yml')
+        code.interact(banner='here', local=dict(globals(), **locals()))
+    list_merge()
 
 if __name__ == '__main__':
     """Simple python template
