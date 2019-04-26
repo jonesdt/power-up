@@ -7,6 +7,10 @@
 #Disk space (Spectrum DLI) 11 GB 11 GB
 #Much of the hardware requirements can probably be checked with Ansible facts.
 
+
+#- name: Gather Facts for nodes
+
+
 - name: Set Variables
   set_fact:
     mountname: "/" #root_filesystem
