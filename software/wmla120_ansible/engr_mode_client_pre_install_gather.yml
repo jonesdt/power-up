@@ -8,6 +8,21 @@
   set_fact:
     dependencies_dir: "{{ hostvars['localhost']['deps_path_local'] }}"
 
+#- name: Gathering Facts
+#  gather_facts: false
+
+- name: Collect minimal facts
+  setup:
+    gather_subset:
+      - '!all'
+      - '!min'
+      - 'env'
+  register: facts
+
+- name: Printing the environment Variable in Ansible
+  debug:
+    msg: "{{ facts }}"
+
             #Create Dependencies Directory
 - name: Check that the check if dependencies directory exists
   stat:
